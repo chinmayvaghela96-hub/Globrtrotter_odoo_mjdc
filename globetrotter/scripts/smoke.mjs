@@ -37,7 +37,7 @@ const cookie = `gt_session=${token}`
 
 const checks = [
   { path: "/", expect: ["Build your own", "adventure", "Discover"] },
-  { path: "/dashboard", expect: ["Southeast Asia Loop", "Popular right now"] },
+  { path: "/dashboard", expect: ["Southeast Asia Loop", "Popular destinations"] },
   { path: "/trips", expect: ["My trips", "Bangkok"] },
   { path: "/trips/new", expect: ["Plan a new trip", "Total budget"] },
   { path: `/trips/${trip.id}`, expect: ["Bangkok", "Chiang Mai", "Ubud"] },
@@ -57,6 +57,8 @@ const checks = [
   { path: "/cities?country=Thailand", expect: ["Bangkok", "Chiang Mai"] },
   { path: "/cities?region=Europe&country=France", expect: ["Paris"] },
   { path: "/wishlist", expect: ["Wishlist"] },
+  // Added upstream by the public-sharing work.
+  { path: "/inspiration", expect: ["Inspiration"] },
   { path: "/cities/" + (await prisma.city.findFirstOrThrow({
       where: { name: "Bangkok" }, select: { id: true },
     })).id, expect: ["Bangkok", "Nearby cities", "Where it is"] },
