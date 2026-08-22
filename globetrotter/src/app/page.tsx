@@ -22,7 +22,7 @@ export default async function LandingPage() {
   ])
 
   return (
-    <div className="relative flex min-h-svh flex-col overflow-hidden bg-[#0b1e27] text-[#e6edef]">
+    <div className="relative flex min-h-svh flex-col overflow-hidden bg-[#0d1c2a] text-[#e9eef3]">
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src="/hero.jpg"
@@ -31,7 +31,7 @@ export default async function LandingPage() {
       />
       <div
         aria-hidden
-        className="absolute inset-0 bg-gradient-to-br from-[#0b1e27]/95 via-[#102b39]/85 to-[#0b5264]/70"
+        className="absolute inset-0 bg-gradient-to-br from-[#0d1c2a]/95 via-[#12202e]/85 to-[#2b6ea3]/70"
       />
 
       <header className="relative z-10 mx-auto flex w-full max-w-6xl items-center gap-6 px-6 py-6">
@@ -51,13 +51,13 @@ export default async function LandingPage() {
             <>
               <Link
                 href="/login"
-                className="rounded-md px-3 py-1.5 text-sm text-[#c8d6da] transition-colors hover:text-white"
+                className="rounded-md px-3 py-1.5 text-sm text-[#c6d6e4] transition-colors hover:text-white"
               >
                 Sign in
               </Link>
               <Link
                 href="/signup"
-                className="rounded-lg bg-[#dcae72] px-4 py-2 text-sm font-medium text-[#102b39] transition-colors hover:bg-[#e6bd8a]"
+                className="rounded-lg bg-[#dcae72] px-4 py-2 text-sm font-medium text-[#12202e] transition-colors hover:bg-[#e6bd8a]"
               >
                 Get started
               </Link>
@@ -74,8 +74,8 @@ export default async function LandingPage() {
           </h1>
 
           <div className="flex flex-col gap-1">
-            <p className="text-lg text-[#c8d6da]">Plan. Personalize. Explore.</p>
-            <p className="text-[#93a8b0]">Your dream trip, your way.</p>
+            <p className="text-lg text-[#c6d6e4]">Plan. Personalize. Explore.</p>
+            <p className="text-[#9db2c4]">Your dream trip, your way.</p>
           </div>
 
           {/* The flight path from the original landing page. */}
@@ -101,13 +101,13 @@ export default async function LandingPage() {
           <div className="flex flex-wrap items-center gap-3">
             <Link
               href={user ? "/trips/new" : "/signup"}
-              className="rounded-lg bg-[#dcae72] px-5 py-2.5 font-medium text-[#102b39] transition-colors hover:bg-[#e6bd8a]"
+              className="rounded-lg bg-[#dcae72] px-5 py-2.5 font-medium text-[#12202e] transition-colors hover:bg-[#e6bd8a]"
             >
               {user ? "Plan a new trip" : "Start planning"}
             </Link>
             <Link
               href="/cities"
-              className="rounded-lg border border-white/25 px-5 py-2.5 text-[#e6edef] transition-colors hover:border-white/50"
+              className="rounded-lg border border-white/25 px-5 py-2.5 text-[#e9eef3] transition-colors hover:border-white/50"
             >
               Browse {cityCount} cities
             </Link>
@@ -125,23 +125,23 @@ export default async function LandingPage() {
           ].map((feature) => (
             <div
               key={feature.term}
-              className="flex flex-col gap-1 bg-[#0f2833]/85 px-5 py-4"
+              className="flex flex-col gap-1 bg-[#14263a]/85 px-5 py-4"
             >
               <dt className="font-heading text-lg font-semibold">
                 {feature.term}
               </dt>
-              <dd className="text-sm text-[#93a8b0]">{feature.detail}</dd>
+              <dd className="text-sm text-[#9db2c4]">{feature.detail}</dd>
             </div>
           ))}
         </dl>
       </main>
 
-      <footer className="relative z-10 mx-auto w-full max-w-6xl px-6 pb-8 text-sm text-[#7d939b]">
+      <footer className="relative z-10 mx-auto w-full max-w-6xl px-6 pb-8 text-sm text-[#7f95a8]">
         Built for the Odoo hackathon.{" "}
         {!user && (
           <>
             Try it with{" "}
-            <span className="font-mono text-[#93a8b0]">
+            <span className="font-mono text-[#9db2c4]">
               demo@globetrotter.app / demo1234
             </span>
           </>

@@ -54,102 +54,112 @@
 }
 
 /**
- * Palette ported from the landing page design in frontend/src/styles/home.css:
- * deep petrol teal (#102b39, #0b5264) with a gold accent (#dcae72). Kept as
- * hex rather than oklch so each value traces back to that file.
+ * Deep blue (#12202e, #2b6ea3) with a warm gold accent (#dcae72), grown out of
+ * the landing page design in frontend/src/styles/home.css. Kept as hex rather
+ * than oklch so every value is legible at a glance.
  *
- * Neutrals carry a slight teal bias so they read as chosen rather than
- * inherited from the component library's default grey.
+ * Neutrals carry a blue cast so they read as chosen rather than inherited from
+ * the component library's default grey — and there is no pure white anywhere,
+ * because white next to the hero reads as a different application.
  */
 :root {
-  --background: #fafcfc;
-  --foreground: #102b39;
-  --card: #ffffff;
-  --card-foreground: #102b39;
-  --popover: #ffffff;
-  --popover-foreground: #102b39;
-  --primary: #0b5264;
-  --primary-foreground: #fafcfc;
-  --secondary: #eaf0f2;
-  --secondary-foreground: #102b39;
-  --muted: #eef3f4;
-  --muted-foreground: #5d6b71;
+  /* Paper with a blue cast, never pure white — a white ground next to the
+     hero reads as a different application. */
+  --background: #f4f8fb;
+  --foreground: #12202e;
+  --card: #fbfdfe;
+  --card-foreground: #12202e;
+  --popover: #fbfdfe;
+  --popover-foreground: #12202e;
+  --primary: #2b6ea3;
+  --primary-foreground: #f4f8fb;
+  --secondary: #e6eef5;
+  --secondary-foreground: #12202e;
+  --muted: #eaf1f7;
+  --muted-foreground: #5b6f80;
   /*
    * `--accent` is shadcn's muted hover surface for menu and dropdown items,
    * not a brand colour. The landing's gold lives in `--brand` instead —
    * putting it here turned every dropdown hover gold.
    */
-  --accent: #e4ecee;
-  --accent-foreground: #102b39;
+  --accent: #e3ecf4;
+  --accent-foreground: #12202e;
   --brand: #dcae72;
-  --brand-foreground: #102b39;
+  --brand-foreground: #12202e;
   /* The petrol ground the landing hero and the app header share. */
-  --shell: #102b39;
-  --shell-foreground: #e6edef;
-  --shell-muted: #93a8b0;
+  --shell: #12202e;
+  --shell-foreground: #e9eef3;
+  --shell-muted: #9db2c4;
   --destructive: #a8342b;
-  --border: #d9dfe1;
-  --input: #d5dcdf;
-  --ring: #0b5264;
+  --border: #d5e2ec;
+  --input: #cfdee9;
+  --ring: #2b6ea3;
   /* teal-to-gold ramp, for the budget breakdown charts */
-  --chart-1: #0b5264;
-  --chart-2: #3d8ea1;
-  --chart-3: #7fb3bd;
+  --chart-1: #2b6ea3;
+  --chart-2: #5f9dcb;
+  --chart-3: #9cc4de;
   --chart-4: #dcae72;
-  --chart-5: #b5793c;
+  --chart-5: #b07f42;
   --radius: 0.625rem;
-  --sidebar: #f2f6f7;
-  --sidebar-foreground: #102b39;
-  --sidebar-primary: #0b5264;
+  --sidebar: #eef4f9;
+  --sidebar-foreground: #12202e;
+  --sidebar-primary: #2b6ea3;
   --sidebar-primary-foreground: #fafcfc;
-  --sidebar-accent: #eaf0f2;
-  --sidebar-accent-foreground: #102b39;
-  --sidebar-border: #d9dfe1;
-  --sidebar-ring: #0b5264;
+  --sidebar-accent: #e6eef5;
+  --sidebar-accent-foreground: #12202e;
+  --sidebar-border: #d5e2ec;
+  --sidebar-ring: #2b6ea3;
 }
 
 /**
- * The dark theme is the landing page's own world: the hero's petrol ground
- * with the same gold accent. The teal lifts to #4ca7bd so it keeps contrast
- * against a dark surface — a straight inversion of #0b5264 would not.
+ * The default. Blue lifts to #6aa9d8 here so it keeps contrast on a dark
+ * surface — a straight inversion of #2b6ea3 would not.
+ *
+ * Deep blue with the neutrals carrying a little warmth
+ * so surfaces read as dusk rather than as a console. The gold is the one warm
+ * note and is left alone — it is what stops the whole thing feeling cold.
+ *
+ * Blues are deliberately desaturated: a vivid blue at this size reads
+ * synthetic, and the subject is landscape, not software.
  */
 .dark {
-  --background: #0b1e27;
-  --foreground: #e6edef;
-  --card: #142f3b;
-  --card-foreground: #e6edef;
-  --popover: #142f3b;
-  --popover-foreground: #e6edef;
-  --primary: #4ca7bd;
-  --primary-foreground: #06161d;
-  --secondary: #1d3d4a;
-  --secondary-foreground: #e6edef;
-  --muted: #1d3d4a;
-  --muted-foreground: #93a8b0;
-  --accent: #1d3d4a;
-  --accent-foreground: #e6edef;
+  --background: #0e1c28;
+  --foreground: #e9eef3;
+  --card: #16283a;
+  --card-foreground: #e9eef3;
+  --popover: #16283a;
+  --popover-foreground: #e9eef3;
+  --primary: #6aa9d8;
+  --primary-foreground: #0b1622;
+  --secondary: #20364b;
+  --secondary-foreground: #e9eef3;
+  --muted: #1c3145;
+  --muted-foreground: #9db2c4;
+  --accent: #20364b;
+  --accent-foreground: #e9eef3;
   --brand: #dcae72;
-  --brand-foreground: #102b39;
-  --shell: #0d2431;
-  --shell-foreground: #e6edef;
-  --shell-muted: #93a8b0;
-  --destructive: #e08279;
-  --border: #ffffff1f;
-  --input: #ffffff29;
-  --ring: #4ca7bd;
-  --chart-1: #4ca7bd;
-  --chart-2: #7fc4d2;
-  --chart-3: #a9d7df;
+  --brand-foreground: #12202e;
+  --shell: #12222f;
+  --shell-foreground: #e9eef3;
+  --shell-muted: #9db2c4;
+  --destructive: #e2867c;
+  --border: #ffffff1c;
+  --input: #ffffff26;
+  --ring: #6aa9d8;
+  /* blue-to-gold ramp for the budget charts */
+  --chart-1: #6aa9d8;
+  --chart-2: #93c3e0;
+  --chart-3: #bcd9e8;
   --chart-4: #dcae72;
-  --chart-5: #c98f4c;
-  --sidebar: #102b39;
-  --sidebar-foreground: #e6edef;
-  --sidebar-primary: #4ca7bd;
-  --sidebar-primary-foreground: #06161d;
-  --sidebar-accent: #1d3d4a;
-  --sidebar-accent-foreground: #e6edef;
-  --sidebar-border: #ffffff1f;
-  --sidebar-ring: #4ca7bd;
+  --chart-5: #c2884a;
+  --sidebar: #12222f;
+  --sidebar-foreground: #e9eef3;
+  --sidebar-primary: #6aa9d8;
+  --sidebar-primary-foreground: #0b1622;
+  --sidebar-accent: #20364b;
+  --sidebar-accent-foreground: #e9eef3;
+  --sidebar-border: #ffffff1c;
+  --sidebar-ring: #6aa9d8;
 }
 
 @layer base {
