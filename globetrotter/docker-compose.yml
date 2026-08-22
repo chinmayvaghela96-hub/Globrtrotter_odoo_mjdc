@@ -1,0 +1,23 @@
+# Local Postgres for development.
+# Swap DATABASE_URL/DIRECT_URL to a Neon connection string for deploy —
+# nothing else in the app changes.
+services:
+  db:
+    image: postgres:17-alpine
+    container_name: globetrotter-db
+    environment:
+      POSTGRES_USER: globetrotter
+      POSTGRES_PASSWORD: globetrotter
+      POSTGRES_DB: globetrotter
+    ports:
+      - "5433:5432"
+    volumes:
+      - globetrotter-pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U globetrotter -d globetrotter"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+volumes:
+  globetrotter-pgdata:
