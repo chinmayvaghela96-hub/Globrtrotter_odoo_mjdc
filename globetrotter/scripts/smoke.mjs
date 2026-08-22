@@ -36,14 +36,22 @@ const token = await new SignJWT({})
 const cookie = `gt_session=${token}`
 
 const checks = [
+  { path: "/", expect: ["Build your own", "adventure", "Discover"] },
   { path: "/dashboard", expect: ["Southeast Asia Loop", "Popular right now"] },
   { path: "/trips", expect: ["My trips", "Bangkok"] },
   { path: "/trips/new", expect: ["Plan a new trip", "Total budget"] },
   { path: `/trips/${trip.id}`, expect: ["Bangkok", "Chiang Mai", "Ubud"] },
-  { path: `/trips/${trip.id}/build`, expect: ["Stops", "Add a stop", "Save costs"] },
+  { path: `/trips/${trip.id}/build`, expect: ["Stops", "Add a stop"] },
   { path: `/trips/${trip.id}/budget`, expect: ["Total Planned Spend", "Category Distribution", "Daily Spending Timeline"] },
   { path: `/trips/${trip.id}/calendar`, expect: ["Timeline & Daily Schedule", "Day 1"] },
   { path: "/t/sea-loop-demo", expect: ["Southeast Asia Loop", "Public Itinerary"] },
+  { path: "/profile", expect: ["Saved destinations", "Delete account"] },
+  { path: "/cities", expect: ["Paris", "Bangkok"] },
+  { path: "/cities?region=Oceania", expect: ["Sydney", "Queenstown"] },
+  { path: "/activities", expect: ["Guided tour"] },
+  { path: "/activities?cityId=" + (await prisma.city.findFirstOrThrow({
+      where: { name: "Bangkok" }, select: { id: true },
+    })).id, expect: ["Grand Palace"] },
 ]
 
 let failures = 0

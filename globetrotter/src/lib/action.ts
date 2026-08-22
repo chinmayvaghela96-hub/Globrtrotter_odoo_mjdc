@@ -1,7 +1,7 @@
 import { z } from "zod"
 import type { User } from "@prisma/client"
 import { requireUser } from "@/lib/guard"
-import { type ActionResult, fail, ok } from "@/lib/result"
+import { type ActionResult, fail, ok, Rejected } from "@/lib/result"
 
 /**
  * The wrapper every mutation goes through.
@@ -62,6 +62,9 @@ export function action<TSchema extends z.ZodType, TOut>(
       return ok(await handler(parsed.data, user))
     } catch (error) {
       if (isFrameworkSignal(error)) throw error
+      // A business-rule rejection is expected, not a fault: turn it back into
+      // a value without logging it as an error.
+      if (error instanceof Rejected) return fail(error.message, error.fields)
       console.error("[action]", error)
       return fail(GENERIC_FAILURE)
     }
@@ -84,6 +87,7 @@ export function guestAction<TSchema extends z.ZodType, TOut>(
       return await handler(parsed.data)
     } catch (error) {
       if (isFrameworkSignal(error)) throw error
+      if (error instanceof Rejected) return fail(error.message, error.fields)
       console.error("[guestAction]", error)
       return fail(GENERIC_FAILURE)
     }
