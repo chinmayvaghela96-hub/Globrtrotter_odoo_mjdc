@@ -33,7 +33,7 @@ in `.env` and skip `docker compose`. Nothing else changes.
 | `npm run db:seed` | Seed the catalogue, users, and demo trip |
 | `npm run db:reset` | Drop, re-migrate, re-seed |
 | `npm run db:studio` | Prisma Studio |
-| `npm test` | Vitest — 33 tests |
+| `npm test` | Vitest — 54 tests |
 | `npm run smoke` | HTTP smoke test against a running dev server |
 
 `npm run smoke` mints a real session cookie with the app's own secret and
@@ -89,6 +89,15 @@ ever reaches the client.
 
 It rethrows `redirect()` and `notFound()` signals, which Next raises as tagged
 errors: a blanket `catch` would silently break navigation.
+
+A handler rejects a **business rule** — a stop dated outside its trip, an
+activity that does not belong to the stop's city — by throwing `Rejected`
+(usually via `rejectField(field, message)`), not by returning `fail(...)`.
+The wrapper's job is to wrap whatever the handler returns in `ok(...)`, so a
+returned failure came back as `{ ok: true, data: { ok: false } }` and the form
+read a rejection as a success. Throwing is unambiguous, and the wrapper turns
+it straight back into a value — callers still never see an exception.
+`tests/action.test.ts` covers this, and fails if the handling is removed.
 
 ### Multi-row writes are transactions
 
@@ -165,7 +174,9 @@ src/
     guard.ts             session plumbing around authz.ts
     action.ts            the server-action wrapper
     result.ts            ActionResult
-    stop-order.ts        the ordering transactions and their invariant
+    stop-order.ts        stop ordering: 0..n-1 per trip
+    activity-order.ts    activity ordering: 0..n-1 per (stop, day)
+    catalogue-queries.ts city and activity search, filtered in the query
     budget.ts            pure cost rollup (unit-tested)
     dates.ts             UTC calendar-day helpers
     serialize.ts         the Server -> Client boundary

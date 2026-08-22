@@ -5,7 +5,7 @@ import { z } from "zod"
 import { action } from "@/lib/action"
 import { prisma } from "@/lib/db"
 import { formatDateUTC, parseDateUTC } from "@/lib/dates"
-import { fail } from "@/lib/result"
+import { rejectField } from "@/lib/result"
 import { requireStopOwner, requireTripOwner } from "@/lib/guard"
 import { appendStop, deleteStopAndCompact, reorderStop } from "@/lib/stop-order"
 
@@ -55,9 +55,7 @@ export const addStop = action(AddStopInput, async (input) => {
   const tripStart = formatDateUTC(trip.startDate)
   const tripEnd = formatDateUTC(trip.endDate)
   if (input.arrivalDate < tripStart || input.departureDate > tripEnd) {
-    return fail("Check the highlighted fields.", {
-      arrivalDate: `This trip runs ${tripStart} to ${tripEnd}.`,
-    })
+    rejectField("arrivalDate", `This trip runs ${tripStart} to ${tripEnd}.`)
   }
 
   await appendStop({

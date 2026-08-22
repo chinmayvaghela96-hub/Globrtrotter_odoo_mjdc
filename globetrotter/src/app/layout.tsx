@@ -1,13 +1,34 @@
 import type { Metadata } from "next"
-import { Geist, Geist_Mono } from "next/font/google"
+import { DM_Sans, Geist_Mono, Playfair_Display } from "next/font/google"
 import "./globals.css"
 
-const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] })
-const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] })
+// DM Sans + Playfair Display are carried over from the landing page design
+// in frontend/, so the app and its front door share one identity.
+const dmSans = DM_Sans({
+  variable: "--font-dm-sans",
+  subsets: ["latin"],
+  display: "swap",
+})
+
+const playfair = Playfair_Display({
+  variable: "--font-playfair",
+  subsets: ["latin"],
+  display: "swap",
+})
+
+const geistMono = Geist_Mono({
+  variable: "--font-geist-mono",
+  subsets: ["latin"],
+  display: "swap",
+})
 
 export const metadata: Metadata = {
-  title: "GlobeTrotter",
-  description: "Plan multi-city trips, track the budget, and share the itinerary.",
+  title: {
+    default: "GlobeTrotter",
+    template: "%s · GlobeTrotter",
+  },
+  description:
+    "Plan multi-city trips, watch the budget as you build, and share the itinerary.",
 }
 
 export default function RootLayout({
@@ -18,7 +39,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${dmSans.variable} ${playfair.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">{children}</body>
     </html>

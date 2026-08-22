@@ -103,7 +103,7 @@ export default async function DashboardPage() {
           {cities.map((city) => (
             <Link
               key={city.id}
-              href={`/activities?city=${city.id}`}
+              href={`/activities?cityId=${city.id}`}
               className="group overflow-hidden rounded-xl border bg-card transition-colors hover:border-foreground/25"
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
