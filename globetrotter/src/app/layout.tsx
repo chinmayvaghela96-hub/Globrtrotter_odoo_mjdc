@@ -37,11 +37,17 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
+    // `dark` is applied unconditionally: the landing page is a petrol hero,
+    // and an app that flipped to a white ground the moment you signed in read
+    // as two different products. The full light palette is still defined in
+    // globals.css, so a theme toggle only needs to remove this class.
     <html
       lang="en"
-      className={`${dmSans.variable} ${playfair.variable} ${geistMono.variable} h-full antialiased`}
+      className={`dark ${dmSans.variable} ${playfair.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col bg-background text-foreground">
+        {children}
+      </body>
     </html>
   )
 }

@@ -217,7 +217,10 @@ export default async function AdminPage() {
                     </TableCell>
                     <TableCell className="text-right">
                       {trip.isPublic ? (
-                        <Badge variant="outline" className="text-[10px] text-emerald-600 border-emerald-300">
+                        <Badge
+                          variant="outline"
+                          className="border-emerald-300 text-[10px] text-emerald-600 dark:border-emerald-400/40 dark:text-emerald-400"
+                        >
                           Public
                         </Badge>
                       ) : (
