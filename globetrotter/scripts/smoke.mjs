@@ -41,6 +41,13 @@ const checks = [
   { path: "/trips/new", expect: ["Plan a new trip", "Total budget"] },
   { path: `/trips/${trip.id}`, expect: ["Bangkok", "Chiang Mai", "Ubud"] },
   { path: `/trips/${trip.id}/build`, expect: ["Stops", "Add a stop", "Save costs"] },
+  { path: "/profile", expect: ["Saved destinations", "Delete account"] },
+  { path: "/cities", expect: ["Paris", "Bangkok"] },
+  { path: "/cities?region=Oceania", expect: ["Sydney", "Queenstown"] },
+  { path: "/activities", expect: ["Guided tour"] },
+  { path: "/activities?cityId=" + (await prisma.city.findFirstOrThrow({
+      where: { name: "Bangkok" }, select: { id: true },
+    })).id, expect: ["Grand Palace"] },
 ]
 
 let failures = 0
