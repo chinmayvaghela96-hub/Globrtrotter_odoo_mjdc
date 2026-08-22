@@ -25,7 +25,7 @@ export default async function NewTripPage() {
         >
           ← My trips
         </Link>
-        <h1 className="text-2xl font-semibold tracking-tight">Plan a new trip</h1>
+        <h1 className="font-heading text-3xl font-semibold tracking-tight">Plan a new trip</h1>
         <p className="text-sm text-muted-foreground">
           Start from a template or name it and set the dates yourself.
         </p>

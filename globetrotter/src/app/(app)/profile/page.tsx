@@ -19,7 +19,7 @@ export default async function ProfilePage() {
   return (
     <div className="flex flex-col gap-10">
       <div className="flex flex-col gap-1">
-        <h1 className="text-2xl font-semibold tracking-tight">Profile</h1>
+        <h1 className="font-heading text-3xl font-semibold tracking-tight">Profile</h1>
         <p className="text-sm text-muted-foreground">
           Your details, preferences and saved destinations.
         </p>
@@ -37,7 +37,7 @@ export default async function ProfilePage() {
 
       <section className="flex flex-col gap-4">
         <div className="flex items-baseline justify-between gap-4">
-          <h2 className="text-lg font-semibold tracking-tight">
+          <h2 className="font-heading text-xl font-semibold tracking-tight">
             Saved destinations
           </h2>
           <Link href="/cities" className="text-sm text-muted-foreground hover:underline">

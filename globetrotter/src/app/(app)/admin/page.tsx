@@ -55,7 +55,7 @@ export default async function AdminPage() {
       <div className="flex flex-wrap items-center justify-between gap-4 border-b pb-4">
         <div className="flex flex-col gap-1">
           <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-semibold tracking-tight">Admin & Platform Analytics</h1>
+            <h1 className="font-heading text-3xl font-semibold tracking-tight">Admin & Platform Analytics</h1>
             <Badge variant="secondary" className="gap-1 bg-amber-500/10 text-amber-600 dark:text-amber-400">
               <ShieldCheck className="h-3.5 w-3.5" />
               Admin Only

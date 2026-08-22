@@ -24,7 +24,7 @@ export default async function DashboardPage() {
     <div className="flex flex-col gap-10">
       <section className="flex flex-wrap items-end justify-between gap-4">
         <div className="flex flex-col gap-1">
-          <h1 className="text-2xl font-semibold tracking-tight">
+          <h1 className="font-heading text-3xl font-semibold tracking-tight">
             Welcome back, {user.name.split(" ")[0]}
           </h1>
           <p className="text-sm text-muted-foreground">
@@ -53,7 +53,7 @@ export default async function DashboardPage() {
 
       <section className="flex flex-col gap-4">
         <div className="flex items-baseline justify-between">
-          <h2 className="text-lg font-semibold tracking-tight">Your trips</h2>
+          <h2 className="font-heading text-xl font-semibold tracking-tight">Your trips</h2>
           <Link href="/trips" className="text-sm text-muted-foreground hover:underline">
             View all
           </Link>
@@ -163,7 +163,7 @@ export default async function DashboardPage() {
 
       <section className="flex flex-col gap-4">
         <div className="flex items-baseline justify-between">
-          <h2 className="text-lg font-semibold tracking-tight">Popular destinations</h2>
+          <h2 className="font-heading text-xl font-semibold tracking-tight">Popular destinations</h2>
           <Link href="/cities" className="text-sm text-muted-foreground hover:underline">
             Browse all cities
           </Link>

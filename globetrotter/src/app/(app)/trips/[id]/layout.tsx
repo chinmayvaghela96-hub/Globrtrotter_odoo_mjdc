@@ -35,7 +35,7 @@ export default async function TripLayout({
 
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div className="flex flex-col gap-1">
-            <h1 className="text-2xl font-semibold tracking-tight">{trip.name}</h1>
+            <h1 className="font-heading text-3xl font-semibold tracking-tight">{trip.name}</h1>
             <p className="text-sm text-muted-foreground">
               {labelDateUTC(trip.startDate)} — {labelDateUTC(trip.endDate)} ·{" "}
               {days} {days === 1 ? "day" : "days"}
