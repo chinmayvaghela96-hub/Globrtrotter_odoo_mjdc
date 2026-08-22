@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { requireTripOwner } from "@/lib/guard"
 import { formatMoney } from "@/lib/serialize"
+import { describeRate, displayMoney } from "@/lib/money"
 import { getTripBudget, getTripDetail, getTripExpenses } from "@/lib/trip-queries"
 import { deleteExpense } from "@/actions/expense"
 
@@ -288,7 +289,23 @@ export default async function TripBudgetPage({
                         </div>
                       </TableCell>
                       <TableCell className="text-right font-medium tabular-nums">
-                        {formatMoney(exp.amount, trip.currency)}
+                        {(() => {
+                          // What they paid leads; the trip-currency figure
+                          // follows, with the stored rate as the tooltip.
+                          const shown = displayMoney(exp, trip.currency)
+                          if (!shown.converted) return shown.primary
+                          return (
+                            <span
+                              className="flex flex-col items-end leading-tight"
+                              title={describeRate(exp, trip.currency) ?? undefined}
+                            >
+                              <span>{shown.primary}</span>
+                              <span className="text-[11px] font-normal text-muted-foreground">
+                                {shown.secondary}
+                              </span>
+                            </span>
+                          )
+                        })()}
                       </TableCell>
                       <TableCell className="text-right">
                         <form

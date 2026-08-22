@@ -18,7 +18,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
       <div className="relative z-10 flex w-full max-w-md flex-col items-center gap-6">
         {/* Brand Header */}
         <Link href="/" className="group flex items-center gap-2 text-center transition-opacity hover:opacity-90">
-          <span className="flex size-9 items-center justify-center rounded-xl bg-[#dcae72] text-lg font-bold text-[#102b39] shadow-md transition-transform group-hover:scale-105">
+          <span className="flex size-9 items-center justify-center rounded-xl bg-[var(--brand)] text-lg font-bold text-[#102b39] shadow-md transition-transform group-hover:scale-105">
             ✈
           </span>
           <span className="font-heading text-2xl font-bold tracking-tight text-white">

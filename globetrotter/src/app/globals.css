@@ -29,6 +29,11 @@
   --color-destructive: var(--destructive);
   --color-accent-foreground: var(--accent-foreground);
   --color-accent: var(--accent);
+  --color-brand: var(--brand);
+  --color-brand-foreground: var(--brand-foreground);
+  --color-shell: var(--shell);
+  --color-shell-foreground: var(--shell-foreground);
+  --color-shell-muted: var(--shell-muted);
   --color-muted-foreground: var(--muted-foreground);
   --color-muted: var(--muted);
   --color-secondary-foreground: var(--secondary-foreground);
@@ -69,8 +74,19 @@
   --secondary-foreground: #102b39;
   --muted: #eef3f4;
   --muted-foreground: #5d6b71;
-  --accent: #dcae72;
+  /*
+   * `--accent` is shadcn's muted hover surface for menu and dropdown items,
+   * not a brand colour. The landing's gold lives in `--brand` instead —
+   * putting it here turned every dropdown hover gold.
+   */
+  --accent: #e4ecee;
   --accent-foreground: #102b39;
+  --brand: #dcae72;
+  --brand-foreground: #102b39;
+  /* The petrol ground the landing hero and the app header share. */
+  --shell: #102b39;
+  --shell-foreground: #e6edef;
+  --shell-muted: #93a8b0;
   --destructive: #a8342b;
   --border: #d9dfe1;
   --input: #d5dcdf;
@@ -110,8 +126,13 @@
   --secondary-foreground: #e6edef;
   --muted: #1d3d4a;
   --muted-foreground: #93a8b0;
-  --accent: #dcae72;
-  --accent-foreground: #102b39;
+  --accent: #1d3d4a;
+  --accent-foreground: #e6edef;
+  --brand: #dcae72;
+  --brand-foreground: #102b39;
+  --shell: #0d2431;
+  --shell-foreground: #e6edef;
+  --shell-muted: #93a8b0;
   --destructive: #e08279;
   --border: #ffffff1f;
   --input: #ffffff29;

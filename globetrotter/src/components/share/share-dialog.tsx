@@ -16,17 +16,22 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 
+import { SocialShareButtons } from "@/components/share/social-share-buttons"
+
 export function ShareDialog({
   tripId,
   isPublic,
   shareSlug,
+  tripName,
+  tripDescription,
 }: {
   tripId: string
   isPublic: boolean
   shareSlug: string | null
+  tripName?: string
+  tripDescription?: string | null
 }) {
   const [open, setOpen] = useState(false)
-  const [copied, setCopied] = useState(false)
   const [isPending, startTransition] = useTransition()
 
   const origin = typeof window !== "undefined" ? window.location.origin : ""
@@ -47,35 +52,25 @@ export function ShareDialog({
     })
   }
 
-  const handleCopy = async () => {
-    if (!shareUrl) return
-    try {
-      await navigator.clipboard.writeText(shareUrl)
-      setCopied(true)
-      toast.success("Public link copied to clipboard")
-      setTimeout(() => setCopied(false), 2000)
-    } catch {
-      toast.error("Failed to copy link")
-    }
-  }
-
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button size="sm" variant={isPublic ? "outline" : "secondary"} className="gap-1.5">
-          {isPublic ? (
-            <>
-              <Globe className="h-4 w-4 text-emerald-500" />
-              <span>Public</span>
-            </>
-          ) : (
-            <>
-              <Share2 className="h-4 w-4" />
-              <span>Share</span>
-            </>
-          )}
-        </Button>
-      </DialogTrigger>
+      <DialogTrigger
+        render={
+          <Button size="sm" variant={isPublic ? "outline" : "secondary"} className="gap-1.5">
+            {isPublic ? (
+              <>
+                <Globe className="h-4 w-4 text-emerald-500" />
+                <span>Public</span>
+              </>
+            ) : (
+              <>
+                <Share2 className="h-4 w-4" />
+                <span>Share</span>
+              </>
+            )}
+          </Button>
+        }
+      />
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
@@ -126,36 +121,30 @@ export function ShareDialog({
           </div>
 
           {isPublic && shareUrl && (
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="share-link">Shareable Link</Label>
-              <div className="flex items-center gap-2">
+            <div className="flex flex-col gap-3">
+              <div className="flex flex-col gap-1.5">
+                <Label htmlFor="share-link">Shareable Link</Label>
                 <Input
                   id="share-link"
                   readOnly
                   value={shareUrl}
                   className="font-mono text-xs"
                 />
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={handleCopy}
-                  className="shrink-0 gap-1.5"
-                >
-                  {copied ? (
-                    <>
-                      <Check className="h-4 w-4 text-emerald-500" />
-                      Copied
-                    </>
-                  ) : (
-                    <>
-                      <Copy className="h-4 w-4" />
-                      Copy
-                    </>
-                  )}
-                </Button>
               </div>
 
-              <div className="pt-1">
+              <div className="flex flex-col gap-2 pt-1">
+                <span className="text-xs font-medium text-muted-foreground">
+                  Social & Quick Sharing
+                </span>
+                <SocialShareButtons
+                  shareUrl={shareUrl}
+                  tripName={tripName ?? "My Itinerary"}
+                  tripDescription={tripDescription}
+                  showPrint={false}
+                />
+              </div>
+
+              <div className="pt-2 border-t flex items-center justify-between">
                 <a
                   href={`/t/${shareSlug}`}
                   target="_blank"

@@ -23,9 +23,9 @@ export function moneyOrNull(
   return typeof value === "number" ? value : value.toNumber()
 }
 
-export const formatMoney = (amount: number, currency = "INR") =>
-  new Intl.NumberFormat("en-IN", {
-    style: "currency",
-    currency,
-    maximumFractionDigits: 0,
-  }).format(amount)
+/**
+ * Re-exported so the twelve existing import sites keep working, but there is
+ * only one implementation — see `lib/money.ts`, which also owns conversion.
+ * New code should import from there directly.
+ */
+export { formatMoney } from "@/lib/money"

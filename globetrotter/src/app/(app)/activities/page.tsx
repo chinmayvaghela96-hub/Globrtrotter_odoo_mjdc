@@ -121,7 +121,7 @@ export default async function ActivitiesPage({
   return (
     <div className="flex flex-col gap-8">
       <div className="flex flex-col gap-1">
-        <h1 className="text-2xl font-semibold tracking-tight">Activities</h1>
+        <h1 className="font-heading text-3xl font-semibold tracking-tight">Activities</h1>
         <p className="text-sm text-muted-foreground">
           {selectedCity && `${selectedCity.name}, ${selectedCity.country} · `}
           {resultSummary(activities.length, filtered, capped)}

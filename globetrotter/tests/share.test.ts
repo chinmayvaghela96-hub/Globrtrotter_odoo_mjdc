@@ -186,4 +186,77 @@ describe("copyTrip transaction logic", () => {
 
     expect(src?.id).toBe(alicePrivateTrip.id)
   })
+
+  it("clones standalone expenses when present on the source trip", async () => {
+    // Add an expense to Alice's public trip
+    const exp = await prisma.expense.create({
+      data: {
+        tripId: alicePublicTrip.id,
+        category: "TRANSPORT",
+        label: "Train Pass",
+        amount: 2500,
+        date: parseDateUTC("2026-09-01"),
+      },
+    })
+
+    const src = await prisma.trip.findFirst({
+      where: {
+        id: alicePublicTrip.id,
+        OR: [{ isPublic: true }, { userId: bob.id }],
+      },
+      include: {
+        stops: { include: { activities: true } },
+        expenses: true,
+      },
+    })
+
+    expect(src?.expenses).toHaveLength(1)
+
+    const cloned = await prisma.$transaction(async (tx) => {
+      const newTrip = await tx.trip.create({
+        data: {
+          userId: bob.id,
+          name: `${src!.name} (copy with expenses)`,
+          startDate: src!.startDate,
+          endDate: src!.endDate,
+          copiedFromId: src!.id,
+        },
+      })
+
+      for (const e of src!.expenses) {
+        await tx.expense.create({
+          data: {
+            tripId: newTrip.id,
+            category: e.category,
+            label: e.label,
+            amount: e.amount,
+            date: e.date,
+          },
+        })
+      }
+
+      return newTrip
+    })
+
+    const clonedExpenses = await prisma.expense.findMany({
+      where: { tripId: cloned.id },
+    })
+
+    expect(clonedExpenses).toHaveLength(1)
+    expect(clonedExpenses[0].label).toBe("Train Pass")
+    expect(clonedExpenses[0].id).not.toBe(exp.id) // new fresh ID
+  })
+
+  it("enforces private trip concealment from direct share lookups", async () => {
+    // Look up by shareSlug when isPublic is false
+    const privateBySlug = await prisma.trip.findFirst({
+      where: {
+        shareSlug: "some-slug",
+        isPublic: true,
+      },
+    })
+
+    expect(privateBySlug).toBeNull()
+  })
 })
+

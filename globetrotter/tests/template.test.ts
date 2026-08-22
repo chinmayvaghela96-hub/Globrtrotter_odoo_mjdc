@@ -12,7 +12,7 @@
 import { describe, it, expect, beforeAll, afterAll } from "vitest"
 import { prisma } from "@/lib/db"
 import { appendStop } from "@/lib/stop-order"
-import { TEMPLATES } from "@/actions/template"
+import { TEMPLATES } from "@/lib/trip-templates"
 import { parseDateUTC, formatDateUTC, addDaysUTC } from "@/lib/dates"
 import bcrypt from "bcryptjs"
 

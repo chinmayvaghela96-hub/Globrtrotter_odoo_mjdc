@@ -17,6 +17,7 @@ const PROTECTED = [
   "/inspiration",
   "/cities",
   "/activities",
+  "/wishlist",
   "/profile",
   "/admin",
 ]

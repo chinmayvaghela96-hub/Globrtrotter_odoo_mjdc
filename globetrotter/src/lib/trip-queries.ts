@@ -341,3 +341,159 @@ export async function getTripCityNames(tripId: string): Promise<string[]> {
   })
   return stops.map((s) => s.city.name)
 }
+
+/** Standalone expenses for a trip. */
+export async function getTripExpenses(tripId: string) {
+  const expenses = await prisma.expense.findMany({
+    where: { tripId },
+    orderBy: { date: "asc" },
+    select: {
+      id: true,
+      category: true,
+      label: true,
+      amount: true,
+      date: true,
+      originalAmount: true,
+      originalCurrency: true,
+      fxRate: true,
+      fxRateAt: true,
+    },
+  })
+
+  return expenses.map((exp) => ({
+    id: exp.id,
+    category: exp.category,
+    label: exp.label,
+    // Always the trip currency — see actions/expense.ts.
+    amount: money(exp.amount),
+    date: formatDateUTC(exp.date),
+    // Null on anything entered in the trip's own currency.
+    originalAmount: moneyOrNull(exp.originalAmount),
+    originalCurrency: exp.originalCurrency,
+    fxRate: moneyOrNull(exp.fxRate),
+    fxRateAt: exp.fxRateAt ? exp.fxRateAt.toISOString() : null,
+  }))
+}
+
+/** Minimal city names for the trip layout header (TripGlimpse). */
+export async function getTripCityNames(tripId: string): Promise<string[]> {
+  const stops = await prisma.stop.findMany({
+    where: { tripId },
+    orderBy: { orderIndex: "asc" },
+    select: { city: { select: { name: true } } },
+  })
+  return stops.map((s) => s.city.name)
+}
+
+/** Public trips for the community inspiration page and dashboard. */
+export async function getPublicTrips(
+  options: { q?: string; take?: number; excludeUserId?: string } = {},
+) {
+  const where: import("@prisma/client").Prisma.TripWhereInput = {
+    isPublic: true,
+    shareSlug: { not: null },
+  }
+
+  if (options.excludeUserId) {
+    where.userId = { not: options.excludeUserId }
+  }
+
+  if (options.q) {
+    where.OR = [
+      { name: { contains: options.q, mode: "insensitive" } },
+      { description: { contains: options.q, mode: "insensitive" } },
+      {
+        stops: {
+          some: {
+            city: {
+              OR: [
+                { name: { contains: options.q, mode: "insensitive" } },
+                { country: { contains: options.q, mode: "insensitive" } },
+              ],
+            },
+          },
+        },
+      },
+    ]
+  }
+
+  const trips = await prisma.trip.findMany({
+    where,
+    orderBy: { updatedAt: "desc" },
+    take: options.take ?? 24,
+    select: {
+      id: true,
+      name: true,
+      description: true,
+      startDate: true,
+      endDate: true,
+      coverUrl: true,
+      currency: true,
+      shareSlug: true,
+      user: { select: { id: true, name: true, photoUrl: true } },
+      stops: {
+        orderBy: { orderIndex: "asc" },
+        select: {
+          arrivalDate: true,
+          transportCost: true,
+          stayCost: true,
+          city: { select: { id: true, name: true, country: true, imageUrl: true } },
+          activities: { select: { scheduledDate: true, cost: true } },
+        },
+      },
+      expenses: { select: { date: true, category: true, amount: true } },
+    },
+  })
+
+  return trips.map((trip) => {
+    const budget = computeBudget({
+      startDate: trip.startDate,
+      endDate: trip.endDate,
+      budgetCap: null,
+      currency: trip.currency,
+      stops: trip.stops.map((stop) => ({
+        arrivalDate: stop.arrivalDate,
+        transportCost: money(stop.transportCost),
+        stayCost: money(stop.stayCost),
+        activities: stop.activities.map((activity) => ({
+          scheduledDate: activity.scheduledDate,
+          cost: money(activity.cost),
+        })),
+      })),
+      expenses: trip.expenses.map((expense) => ({
+        date: expense.date,
+        category: expense.category as CostCategory,
+        amount: money(expense.amount),
+      })),
+    })
+
+    const firstCityImage =
+      trip.stops.find((s) => s.city.imageUrl)?.city.imageUrl ?? null
+
+    return {
+      id: trip.id,
+      name: trip.name,
+      description: trip.description,
+      startDate: trip.startDate,
+      endDate: trip.endDate,
+      coverUrl: trip.coverUrl ?? firstCityImage,
+      currency: trip.currency,
+      shareSlug: trip.shareSlug,
+      author: trip.user.name,
+      authorId: trip.user.id,
+      stopCount: trip.stops.length,
+      cities: trip.stops.map((stop) => stop.city.name),
+      total: budget.total,
+      perDayAvg: budget.perDayAvg,
+      activityCount: trip.stops.reduce(
+        (sum, s) => sum + s.activities.length,
+        0,
+      ),
+    }
+  })
+}
+
+export type PublicTripSummary = Awaited<
+  ReturnType<typeof getPublicTrips>
+>[number]
+

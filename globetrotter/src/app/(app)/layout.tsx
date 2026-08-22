@@ -10,6 +10,7 @@ const NAV = [
   { href: "/inspiration", label: "Inspiration" },
   { href: "/cities", label: "Cities" },
   { href: "/activities", label: "Activities" },
+  { href: "/wishlist", label: "Wishlist" },
 ]
 
 export default async function AppLayout({
@@ -23,9 +24,14 @@ export default async function AppLayout({
 
   return (
     <div className="flex min-h-svh flex-col">
-      <header className="sticky top-0 z-40 border-b bg-background/80 backdrop-blur">
+      {/* The same petrol ground as the landing hero, so the app reads as the
+          inside of the page people arrived on. */}
+      <header className="sticky top-0 z-40 border-b border-white/10 bg-shell text-shell-foreground">
         <div className="mx-auto flex h-14 w-full max-w-6xl items-center gap-6 px-4">
-          <Link href="/dashboard" className="font-semibold tracking-tight">
+          <Link
+            href="/dashboard"
+            className="font-heading text-lg font-semibold tracking-tight"
+          >
             GlobeTrotter
           </Link>
 
@@ -34,7 +40,7 @@ export default async function AppLayout({
               <Link
                 key={item.href}
                 href={item.href}
-                className="rounded-md px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                className="rounded-md px-3 py-1.5 text-sm text-shell-muted transition-colors hover:bg-white/10 hover:text-shell-foreground"
               >
                 {item.label}
               </Link>
@@ -45,31 +51,31 @@ export default async function AppLayout({
             {user.role === "ADMIN" && (
               <Link
                 href="/admin"
-                className="rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground"
+                className="rounded-md px-3 py-1.5 text-sm text-shell-muted hover:text-shell-foreground"
               >
                 Admin
               </Link>
             )}
             <Link
               href="/profile"
-              className="hidden text-sm text-muted-foreground hover:text-foreground sm:block"
+              className="hidden text-sm text-shell-muted hover:text-shell-foreground sm:block"
             >
               {user.name}
             </Link>
             <form action={signOut}>
-              <Button type="submit" variant="ghost" size="sm">
+              <Button type="submit" variant="ghost" size="sm" className="text-shell-muted hover:bg-white/10 hover:text-shell-foreground">
                 Sign out
               </Button>
             </form>
           </div>
         </div>
 
-        <nav className="flex items-center gap-1 overflow-x-auto border-t px-4 py-2 sm:hidden">
+        <nav className="flex items-center gap-1 overflow-x-auto border-t border-white/10 px-4 py-2 sm:hidden">
           {NAV.map((item) => (
             <Link
               key={item.href}
               href={item.href}
-              className="whitespace-nowrap rounded-md px-3 py-1.5 text-sm text-muted-foreground"
+              className="whitespace-nowrap rounded-md px-3 py-1.5 text-sm text-shell-muted"
             >
               {item.label}
             </Link>
