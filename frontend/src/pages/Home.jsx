@@ -1,5 +1,55 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+
+import PageTransition from "../components/PageTransition";
 import "../styles/home.css";
+
+
+/* =====================================================
+   GLOBE LOGO
+===================================================== */
+
+function GlobeLogo() {
+  return (
+    <div className="globe-logo">
+
+      <svg
+        viewBox="0 0 60 60"
+        xmlns="http://www.w3.org/2000/svg"
+        aria-hidden="true"
+      >
+
+        <circle
+          cx="30"
+          cy="30"
+          r="25"
+        />
+
+        <path d="M30 5 C20 15 20 45 30 55" />
+
+        <path d="M30 5 C40 15 40 45 30 55" />
+
+        <path d="M6 30 H54" />
+
+        <path d="M11 18 H49" />
+
+        <path d="M11 42 H49" />
+
+        <path
+          className="logo-plane"
+          d="M20 34 L42 18 L29 40 L27 32 Z"
+        />
+
+      </svg>
+
+    </div>
+  );
+}
+
+
+/* =====================================================
+   PAPER PLANE
+===================================================== */
 
 function PlaneIcon() {
   return (
@@ -9,388 +59,865 @@ function PlaneIcon() {
       xmlns="http://www.w3.org/2000/svg"
       aria-hidden="true"
     >
+
       <path
         d="M6 32 L94 5 L57 65 L43 42 Z"
         fill="white"
         stroke="rgba(255,255,255,0.7)"
         strokeWidth="1.5"
       />
+
       <path
         d="M43 42 L94 5 L51 48 Z"
         fill="#e9eef0"
       />
+
       <path
         d="M43 42 L51 48 L57 65 Z"
         fill="#d5dfe2"
       />
+
     </svg>
   );
 }
 
-function GlobeLogo() {
-  return (
-    <div className="globe-logo">
-      <svg
-        viewBox="0 0 60 60"
-        xmlns="http://www.w3.org/2000/svg"
-        aria-hidden="true"
-      >
-        <circle cx="30" cy="30" r="25" />
-        <path d="M30 5 C20 15 20 45 30 55" />
-        <path d="M30 5 C40 15 40 45 30 55" />
-        <path d="M6 30 H54" />
-        <path d="M11 18 H49" />
-        <path d="M11 42 H49" />
 
-        <path
-          className="logo-plane"
-          d="M20 34 L42 18 L29 40 L27 32 Z"
-        />
-      </svg>
-    </div>
-  );
-}
-
-function FeatureIcon({ type }) {
-  if (type === "discover") {
-    return (
-      <svg viewBox="0 0 40 40" aria-hidden="true">
-        <path d="M20 37 C20 37 8 25 8 16 A12 12 0 0 1 32 16 C32 25 20 37 20 37Z" />
-        <circle cx="20" cy="16" r="4" />
-      </svg>
-    );
-  }
-
-  if (type === "plan") {
-    return (
-      <svg viewBox="0 0 40 40" aria-hidden="true">
-        <rect x="9" y="11" width="22" height="22" rx="3" />
-        <path d="M14 11 V7 M26 11 V7" />
-        <path d="M14 17 H26 M14 23 H26 M14 29 H22" />
-      </svg>
-    );
-  }
-
-  return (
-    <svg viewBox="0 0 40 40" aria-hidden="true">
-      <path d="M20 33 C17 30 7 24 7 16 A7 7 0 0 1 20 13 A7 7 0 0 1 33 16 C33 24 23 30 20 33Z" />
-    </svg>
-  );
-}
+/* =====================================================
+   HOME
+===================================================== */
 
 function Home() {
+
+  const navigate = useNavigate();
+
   const [isLogin, setIsLogin] = useState(true);
+
   const [showPassword, setShowPassword] = useState(false);
 
+  const [isTransitioning, setIsTransitioning] = useState(false);
+
+
+  /* ===================================================
+     SWITCH LOGIN / SIGNUP
+  =================================================== */
+
   const switchMode = (loginMode) => {
+
     setIsLogin(loginMode);
+
     setShowPassword(false);
+
   };
 
+
+  /* ===================================================
+     LOGIN
+  =================================================== */
+
+  const handleLogin = (event) => {
+
+    event.preventDefault();
+
+    /*
+      For now this is frontend-only.
+
+      Later your backend friend will replace this
+      with real authentication.
+    */
+
+    setIsTransitioning(true);
+
+    setTimeout(() => {
+
+      navigate("/dashboard");
+
+    }, 1100);
+
+  };
+
+
+  /* ===================================================
+     SIGNUP
+  =================================================== */
+
+  const handleSignup = (event) => {
+
+    event.preventDefault();
+
+    /*
+      Signup will later connect to the backend.
+
+      For now we simply keep the user on the page.
+    */
+
+    console.log("Signup submitted");
+
+  };
+
+
   return (
-    <div className="home">
+    <>
 
-      {/* Dark scenic overlay */}
-      <div className="home-overlay" />
+      {/* ===============================================
+          PAGE TRANSITION
+      =============================================== */}
 
-      {/* TOP NAVIGATION */}
-      <header className="navbar">
-
-        <div className="nav-logo">
-          <GlobeLogo />
-          <span>GlobeTrotter</span>
-        </div>
-
-        <nav className="nav-links">
-          <a href="#destinations">Destinations</a>
-          <a href="#plan">Plan Trip</a>
-          <a href="#about">About Us</a>
-          <a href="#contact">Contact</a>
-        </nav>
-
-        <button className="mobile-menu" aria-label="Open menu">
-          <span />
-          <span />
-          <span />
-        </button>
-
-      </header>
+      <PageTransition
+        show={isTransitioning}
+      />
 
 
-      {/* MAIN HERO */}
-      <main className="hero">
+      {/* ===============================================
+          HOME
+      =============================================== */}
 
-        {/* LEFT CONTENT */}
-        <section className="hero-content">
-
-          <h1>
-            Build your
-            <br />
-            own
-            <em>adventure</em>
-          </h1>
-
-          <p className="hero-tagline">
-            Plan. Personalize. Explore.
-          </p>
-
-          <p className="hero-subtitle">
-            Your dream trip, your way.
-          </p>
+      <div className="home">
 
 
-          {/* PAPER PLANE */}
-          <div className="flight-path">
+        {/* Background overlay */}
 
-            <svg
-              className="dotted-path"
-              viewBox="0 0 420 180"
-              preserveAspectRatio="none"
-              aria-hidden="true"
-            >
-              <path
-                d="M8 130
-                   C70 165, 115 158, 150 125
-                   C185 92, 210 105, 245 125
-                   C285 150, 330 92, 390 48"
-              />
-            </svg>
-
-            <div className="hero-plane">
-              <PlaneIcon />
-            </div>
-
-          </div>
-
-        </section>
+        <div className="home-overlay" />
 
 
-        {/* AUTH CARD */}
-        <section className="auth-card">
+        {/* =============================================
+            NAVBAR
+        ============================================= */}
 
-          <div className="auth-heading">
+        <header className="navbar">
+
+
+          {/* Logo */}
+
+          <div className="nav-logo">
+
             <GlobeLogo />
 
-            <div>
-              <h2>GlobeTrotter</h2>
-              <p>Your Journey, Your Story.</p>
-            </div>
-          </div>
-
-
-          {/* LOGIN / SIGNUP TABS */}
-          <div className="tabs">
-
-            <button
-              type="button"
-              className={isLogin ? "active" : ""}
-              onClick={() => switchMode(true)}
-            >
-              Login
-            </button>
-
-            <button
-              type="button"
-              className={!isLogin ? "active" : ""}
-              onClick={() => switchMode(false)}
-            >
-              Sign Up
-            </button>
+            <span>
+              GlobeTrotter
+            </span>
 
           </div>
 
 
-          {/* FORM */}
-          <form
-            className={`auth-form ${isLogin ? "login-form" : "signup-form"}`}
-            onSubmit={(event) => event.preventDefault()}
+          {/* Navigation */}
+
+          <nav className="nav-links">
+
+            <a href="#destinations">
+              Destinations
+            </a>
+
+            <a href="#plan">
+              Plan Trip
+            </a>
+
+            <a href="#about">
+              About Us
+            </a>
+
+            <a href="#contact">
+              Contact
+            </a>
+
+          </nav>
+
+
+          {/* Mobile menu */}
+
+          <button
+            className="mobile-menu"
+            aria-label="Open menu"
           >
 
-            {!isLogin && (
-              <label className="input-group">
-                <span className="input-icon">
-                  <svg viewBox="0 0 24 24">
-                    <circle cx="12" cy="8" r="4" />
-                    <path d="M4 21 C4 16 8 14 12 14 C16 14 20 16 20 21" />
-                  </svg>
-                </span>
+            <span />
+            <span />
+            <span />
 
-                <input
-                  type="text"
-                  placeholder="Full Name"
+          </button>
+
+        </header>
+
+
+        {/* =============================================
+            HERO
+        ============================================= */}
+
+        <main className="hero">
+
+
+          {/* ===========================================
+              LEFT SIDE
+          =========================================== */}
+
+          <section className="hero-content">
+
+
+            <h1>
+
+              Build your
+
+              <br />
+
+              own
+
+              <em>
+                adventure
+              </em>
+
+            </h1>
+
+
+            <p className="hero-tagline">
+              Plan. Personalize. Explore.
+            </p>
+
+
+            <p className="hero-subtitle">
+              Your dream trip, your way.
+            </p>
+
+
+            {/* =========================================
+                PAPER PLANE
+            ========================================= */}
+
+            <div className="flight-path">
+
+
+              <svg
+                className="dotted-path"
+                viewBox="0 0 420 180"
+                preserveAspectRatio="none"
+                aria-hidden="true"
+              >
+
+                <path
+                  d="
+                    M8 130
+                    C70 165,
+                    115 158,
+                    150 125
+                    C185 92,
+                    210 105,
+                    245 125
+                    C285 150,
+                    330 92,
+                    390 48
+                  "
                 />
-              </label>
-            )}
+
+              </svg>
 
 
-            <label className="input-group">
-              <span className="input-icon">
-                <svg viewBox="0 0 24 24">
-                  <rect x="3" y="5" width="18" height="14" rx="2" />
-                  <path d="M4 7 L12 13 L20 7" />
-                </svg>
-              </span>
+              <div className="hero-plane">
 
-              <input
-                type="email"
-                placeholder="Email"
-              />
-            </label>
+                <PlaneIcon />
+
+              </div>
+
+            </div>
+
+          </section>
 
 
-            <label className="input-group">
-              <span className="input-icon">
-                <svg viewBox="0 0 24 24">
-                  <rect x="5" y="10" width="14" height="10" rx="2" />
-                  <path d="M8 10 V7 A4 4 0 0 1 16 7 V10" />
-                </svg>
-              </span>
+          {/* ===========================================
+              AUTH CARD
+          =========================================== */}
 
-              <input
-                type={showPassword ? "text" : "password"}
-                placeholder="Password"
-              />
+          <section className="auth-card">
+
+
+            {/* Authentication heading */}
+
+            <div className="auth-heading">
+
+              <GlobeLogo />
+
+              <div>
+
+                <h2>
+                  GlobeTrotter
+                </h2>
+
+                <p>
+                  Your Journey, Your Story.
+                </p>
+
+              </div>
+
+            </div>
+
+
+            {/* =========================================
+                LOGIN / SIGNUP TABS
+            ========================================= */}
+
+            <div className="tabs">
+
 
               <button
                 type="button"
-                className="eye-button"
-                onClick={() => setShowPassword(!showPassword)}
-                aria-label="Show or hide password"
+                className={
+                  isLogin
+                    ? "active"
+                    : ""
+                }
+                onClick={() =>
+                  switchMode(true)
+                }
               >
-                {showPassword ? "◉" : "◉"}
+                Login
               </button>
 
-            </label>
+
+              <button
+                type="button"
+                className={
+                  !isLogin
+                    ? "active"
+                    : ""
+                }
+                onClick={() =>
+                  switchMode(false)
+                }
+              >
+                Sign Up
+              </button>
 
 
-            {!isLogin && (
-              <label className="input-group">
-                <span className="input-icon">
-                  <svg viewBox="0 0 24 24">
-                    <rect x="5" y="10" width="14" height="10" rx="2" />
-                    <path d="M8 10 V7 A4 4 0 0 1 16 7 V10" />
-                  </svg>
-                </span>
-
-                <input
-                  type="password"
-                  placeholder="Confirm Password"
-                />
-              </label>
-            )}
+            </div>
 
 
-            {isLogin && (
-              <div className="forgot-password">
-                Forgot Password?
-              </div>
-            )}
+            {/* =========================================
+                LOGIN FORM
+            ========================================= */}
+
+            {isLogin ? (
+
+              <form
+                className="auth-form login-form"
+                onSubmit={handleLogin}
+              >
 
 
-            <button
-              type="submit"
-              className="login-button"
-            >
-              {isLogin ? "Login" : "Create Account"}
-              <span>→</span>
-            </button>
+                {/* Email */}
+
+                <label className="input-group">
+
+                  <span className="input-icon">
+
+                    <svg viewBox="0 0 24 24">
+
+                      <rect
+                        x="3"
+                        y="5"
+                        width="18"
+                        height="14"
+                        rx="2"
+                      />
+
+                      <path
+                        d="M4 7 L12 13 L20 7"
+                      />
+
+                    </svg>
+
+                  </span>
 
 
-            {isLogin && (
-              <>
-                <div className="divider">
-                  <span />
-                  <p>or</p>
-                  <span />
+                  <input
+                    type="email"
+                    placeholder="Email"
+                    required
+                  />
+
+                </label>
+
+
+                {/* Password */}
+
+                <label className="input-group">
+
+                  <span className="input-icon">
+
+                    <svg viewBox="0 0 24 24">
+
+                      <rect
+                        x="5"
+                        y="10"
+                        width="14"
+                        height="10"
+                        rx="2"
+                      />
+
+                      <path
+                        d="M8 10 V7 A4 4 0 0 1 16 7 V10"
+                      />
+
+                    </svg>
+
+                  </span>
+
+
+                  <input
+                    type={
+                      showPassword
+                        ? "text"
+                        : "password"
+                    }
+                    placeholder="Password"
+                    required
+                  />
+
+
+                  <button
+                    type="button"
+                    className="eye-button"
+                    onClick={() =>
+                      setShowPassword(
+                        !showPassword
+                      )
+                    }
+                    aria-label="Show password"
+                  >
+
+                    {showPassword
+                      ? "◉"
+                      : "◉"
+                    }
+
+                  </button>
+
+                </label>
+
+
+                {/* Forgot password */}
+
+                <div className="forgot-password">
+
+                  Forgot Password?
+
                 </div>
+
+
+                {/* Login */}
+
+                <button
+                  type="submit"
+                  className="login-button"
+                >
+
+                  Login
+
+                  <span>
+                    →
+                  </span>
+
+                </button>
+
+
+                {/* Divider */}
+
+                <div className="divider">
+
+                  <span />
+
+                  <p>
+                    or
+                  </p>
+
+                  <span />
+
+                </div>
+
+
+                {/* Google */}
 
                 <button
                   type="button"
                   className="google-button"
                 >
-                  <span className="google-g">G</span>
+
+                  <span className="google-g">
+                    G
+                  </span>
+
                   Continue with Google
+
                 </button>
-              </>
+
+
+                {/* Signup */}
+
+                <p className="switch-account">
+
+                  Don't have an account?
+
+                  <button
+                    type="button"
+                    onClick={() =>
+                      switchMode(false)
+                    }
+                  >
+                    Sign Up
+                  </button>
+
+                </p>
+
+              </form>
+
+            ) : (
+
+
+              /* =======================================
+                 SIGNUP FORM
+              ======================================= */
+
+              <form
+                className="auth-form signup-form"
+                onSubmit={handleSignup}
+              >
+
+
+                {/* Full name */}
+
+                <label className="input-group">
+
+                  <span className="input-icon">
+
+                    <svg viewBox="0 0 24 24">
+
+                      <circle
+                        cx="12"
+                        cy="8"
+                        r="4"
+                      />
+
+                      <path
+                        d="
+                          M4 21
+                          C4 16 8 14 12 14
+                          C16 14 20 16 20 21
+                        "
+                      />
+
+                    </svg>
+
+                  </span>
+
+
+                  <input
+                    type="text"
+                    placeholder="Full Name"
+                    required
+                  />
+
+                </label>
+
+
+                {/* Email */}
+
+                <label className="input-group">
+
+                  <span className="input-icon">
+
+                    <svg viewBox="0 0 24 24">
+
+                      <rect
+                        x="3"
+                        y="5"
+                        width="18"
+                        height="14"
+                        rx="2"
+                      />
+
+                      <path
+                        d="M4 7 L12 13 L20 7"
+                      />
+
+                    </svg>
+
+                  </span>
+
+
+                  <input
+                    type="email"
+                    placeholder="Email"
+                    required
+                  />
+
+                </label>
+
+
+                {/* Password */}
+
+                <label className="input-group">
+
+                  <span className="input-icon">
+
+                    <svg viewBox="0 0 24 24">
+
+                      <rect
+                        x="5"
+                        y="10"
+                        width="14"
+                        height="10"
+                        rx="2"
+                      />
+
+                      <path
+                        d="M8 10 V7 A4 4 0 0 1 16 7 V10"
+                      />
+
+                    </svg>
+
+                  </span>
+
+
+                  <input
+                    type={
+                      showPassword
+                        ? "text"
+                        : "password"
+                    }
+                    placeholder="Password"
+                    required
+                  />
+
+
+                  <button
+                    type="button"
+                    className="eye-button"
+                    onClick={() =>
+                      setShowPassword(
+                        !showPassword
+                      )
+                    }
+                  >
+
+                    ◉
+
+                  </button>
+
+                </label>
+
+
+                {/* Confirm password */}
+
+                <label className="input-group">
+
+                  <span className="input-icon">
+
+                    <svg viewBox="0 0 24 24">
+
+                      <rect
+                        x="5"
+                        y="10"
+                        width="14"
+                        height="10"
+                        rx="2"
+                      />
+
+                      <path
+                        d="M8 10 V7 A4 4 0 0 1 16 7 V10"
+                      />
+
+                    </svg>
+
+                  </span>
+
+
+                  <input
+                    type="password"
+                    placeholder="Confirm Password"
+                    required
+                  />
+
+                </label>
+
+
+                {/* Create account */}
+
+                <button
+                  type="submit"
+                  className="login-button"
+                >
+
+                  Create Account
+
+                  <span>
+                    →
+                  </span>
+
+                </button>
+
+
+                {/* Login */}
+
+                <p className="switch-account">
+
+                  Already have an account?
+
+                  <button
+                    type="button"
+                    onClick={() =>
+                      switchMode(true)
+                    }
+                  >
+                    Login
+                  </button>
+
+                </p>
+
+              </form>
+
             )}
 
+          </section>
 
-            <p className="switch-account">
+        </main>
 
-              {isLogin
-                ? "Don't have an account?"
-                : "Already have an account?"
-              }
 
-              <button
-                type="button"
-                onClick={() => switchMode(!isLogin)}
-              >
-                {isLogin ? "Sign Up" : "Login"}
-              </button>
+        {/* =============================================
+            BOTTOM FEATURES
+        ============================================= */}
 
-            </p>
+        <section className="feature-bar">
 
-          </form>
+
+          <div className="feature">
+
+            <div className="feature-icon">
+
+              <svg viewBox="0 0 40 40">
+
+                <path
+                  d="
+                    M20 37
+                    C20 37 8 25 8 16
+                    A12 12 0 0 1 32 16
+                    C32 25 20 37 20 37Z
+                  "
+                />
+
+                <circle
+                  cx="20"
+                  cy="16"
+                  r="4"
+                />
+
+              </svg>
+
+            </div>
+
+
+            <div>
+
+              <h3>
+                Discover
+              </h3>
+
+              <p>
+                Amazing destinations
+              </p>
+
+            </div>
+
+          </div>
+
+
+          <div className="feature-divider" />
+
+
+          <div className="feature">
+
+            <div className="feature-icon">
+
+              <svg viewBox="0 0 40 40">
+
+                <rect
+                  x="9"
+                  y="11"
+                  width="22"
+                  height="22"
+                  rx="3"
+                />
+
+                <path
+                  d="M14 11 V7 M26 11 V7"
+                />
+
+                <path
+                  d="
+                    M14 17 H26
+                    M14 23 H26
+                    M14 29 H22
+                  "
+                />
+
+              </svg>
+
+            </div>
+
+
+            <div>
+
+              <h3>
+                Plan
+              </h3>
+
+              <p>
+                Your perfect itinerary
+              </p>
+
+            </div>
+
+          </div>
+
+
+          <div className="feature-divider" />
+
+
+          <div className="feature">
+
+            <div className="feature-icon experience">
+
+              <svg viewBox="0 0 40 40">
+
+                <path
+                  d="
+                    M20 33
+                    C17 30 7 24 7 16
+                    A7 7 0 0 1 20 13
+                    A7 7 0 0 1 33 16
+                    C33 24 23 30 20 33Z
+                  "
+                />
+
+              </svg>
+
+            </div>
+
+
+            <div>
+
+              <h3>
+                Experience
+              </h3>
+
+              <p>
+                Unforgettable moments
+              </p>
+
+            </div>
+
+          </div>
 
         </section>
 
-      </main>
+      </div>
 
-
-      {/* BOTTOM FEATURES */}
-      <section className="feature-bar">
-
-        <div className="feature">
-
-          <div className="feature-icon">
-            <FeatureIcon type="discover" />
-          </div>
-
-          <div>
-            <h3>Discover</h3>
-            <p>Amazing destinations</p>
-          </div>
-
-        </div>
-
-
-        <div className="feature-divider" />
-
-
-        <div className="feature">
-
-          <div className="feature-icon">
-            <FeatureIcon type="plan" />
-          </div>
-
-          <div>
-            <h3>Plan</h3>
-            <p>Your perfect itinerary</p>
-          </div>
-
-        </div>
-
-
-        <div className="feature-divider" />
-
-
-        <div className="feature">
-
-          <div className="feature-icon experience">
-            <FeatureIcon type="experience" />
-          </div>
-
-          <div>
-            <h3>Experience</h3>
-            <p>Unforgettable moments</p>
-          </div>
-
-        </div>
-
-      </section>
-
-    </div>
+    </>
   );
 }
 

@@ -1,0 +1,1114 @@
+/* =====================================================
+   DASHBOARD
+===================================================== */
+
+.dashboard {
+  min-height: 100vh;
+  background: #f6f5f1;
+  color: #173542;
+  font-family: Arial, sans-serif;
+}
+
+
+/* =====================================================
+   NAVBAR
+===================================================== */
+
+.dashboard-nav {
+  height: 78px;
+
+  padding: 0 7%;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  background: rgba(255,255,255,0.94);
+
+  border-bottom: 1px solid #e8e7e2;
+
+  position: sticky;
+  top: 0;
+
+  z-index: 20;
+}
+
+
+.dashboard-logo {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+
+  font-size: 22px;
+  font-weight: 700;
+
+  color: #123e4c;
+}
+
+
+.dashboard-globe {
+  width: 38px;
+  height: 38px;
+
+  border-radius: 50%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 28px;
+}
+
+
+.dashboard-links {
+  display: flex;
+  align-items: center;
+  gap: 34px;
+}
+
+
+.dashboard-links button {
+  border: none;
+  background: transparent;
+
+  color: #6c777b;
+
+  font-size: 14px;
+
+  cursor: pointer;
+
+  padding: 8px 2px;
+}
+
+
+.dashboard-links button:hover,
+.dashboard-links .nav-active {
+  color: #123e4c;
+}
+
+
+.dashboard-links .nav-active {
+  font-weight: 700;
+}
+
+
+.profile {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+}
+
+
+.notification {
+  width: 36px;
+  height: 36px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 1px solid #e2e3df;
+
+  border-radius: 50%;
+
+  color: #52656c;
+
+  cursor: pointer;
+}
+
+
+.profile-avatar {
+  width: 39px;
+  height: 39px;
+
+  border-radius: 50%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: #d9a66b;
+
+  color: white;
+
+  font-weight: 700;
+}
+
+
+.profile-name {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+
+.profile-name strong {
+  font-size: 13px;
+}
+
+
+.profile-name span {
+  color: #899296;
+  font-size: 10px;
+}
+
+
+/* =====================================================
+   MAIN
+===================================================== */
+
+.dashboard-main {
+  width: min(1280px, 86%);
+
+  margin: auto;
+
+  padding: 60px 0 80px;
+}
+
+
+/* =====================================================
+   WELCOME
+===================================================== */
+
+.dashboard-welcome {
+  display: flex;
+
+  justify-content: space-between;
+  align-items: flex-end;
+
+  gap: 40px;
+
+  margin-bottom: 55px;
+}
+
+
+.welcome-small {
+  margin: 0 0 13px;
+
+  color: #c18c53;
+
+  font-size: 11px;
+
+  font-weight: 700;
+
+  letter-spacing: 2px;
+}
+
+
+.dashboard-welcome h1 {
+  margin: 0;
+
+  font-size: clamp(42px, 5vw, 68px);
+
+  line-height: 0.98;
+
+  letter-spacing: -3px;
+
+  color: #173542;
+}
+
+
+.dashboard-welcome h1 span {
+  display: block;
+
+  font-family: Georgia, serif;
+
+  font-style: italic;
+
+  font-weight: 400;
+
+  color: #c4935d;
+}
+
+
+.welcome-description {
+  max-width: 500px;
+
+  margin-top: 22px;
+
+  color: #718086;
+
+  line-height: 1.6;
+
+  font-size: 14px;
+}
+
+
+/* =====================================================
+   SEARCH
+===================================================== */
+
+.dashboard-search {
+  width: 440px;
+  height: 56px;
+
+  display: flex;
+  align-items: center;
+
+  padding: 0 7px 0 18px;
+
+  border: 1px solid #dedfda;
+
+  border-radius: 14px;
+
+  background: white;
+
+  box-shadow:
+    0 10px 30px rgba(28,52,60,0.05);
+}
+
+
+.dashboard-search > span {
+  font-size: 25px;
+
+  color: #708087;
+
+  transform: rotate(-20deg);
+}
+
+
+.dashboard-search input {
+  flex: 1;
+
+  height: 100%;
+
+  border: none;
+  outline: none;
+
+  background: transparent;
+
+  padding: 0 12px;
+
+  font-size: 13px;
+
+  color: #233d46;
+}
+
+
+.dashboard-search input::placeholder {
+  color: #9aa3a6;
+}
+
+
+.dashboard-search button {
+  height: 42px;
+
+  padding: 0 20px;
+
+  border: none;
+
+  border-radius: 10px;
+
+  background: #103f50;
+
+  color: white;
+
+  font-size: 12px;
+
+  font-weight: 600;
+
+  cursor: pointer;
+}
+
+
+/* =====================================================
+   SECTION
+===================================================== */
+
+.dashboard-section {
+  margin-top: 55px;
+}
+
+
+.section-heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+
+  margin-bottom: 22px;
+}
+
+
+.section-heading p {
+  margin: 0 0 6px;
+
+  color: #a27c55;
+
+  font-size: 10px;
+
+  letter-spacing: 1.7px;
+
+  font-weight: 700;
+}
+
+
+.section-heading h2 {
+  margin: 0;
+
+  font-size: 25px;
+
+  letter-spacing: -0.8px;
+}
+
+
+.view-all {
+  border: none;
+  background: transparent;
+
+  color: #174d5d;
+
+  font-size: 12px;
+
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+
+/* =====================================================
+   QUICK ACTIONS
+===================================================== */
+
+.quick-actions {
+  display: grid;
+
+  grid-template-columns:
+    repeat(3, 1fr);
+
+  gap: 15px;
+}
+
+
+.quick-card {
+  position: relative;
+
+  display: flex;
+  align-items: center;
+
+  gap: 16px;
+
+  min-height: 110px;
+
+  padding: 22px;
+
+  border: 1px solid #e4e3de;
+
+  border-radius: 17px;
+
+  background: white;
+
+  text-align: left;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
+}
+
+
+.quick-card:hover {
+  transform: translateY(-4px);
+
+  box-shadow:
+    0 14px 35px rgba(26,49,57,0.09);
+}
+
+
+.quick-icon {
+  width: 48px;
+  height: 48px;
+
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 14px;
+
+  background: #e7f0ef;
+
+  color: #0c5364;
+
+  font-size: 22px;
+}
+
+
+.wishlist-card .quick-icon {
+  background: #f4e8e5;
+  color: #a56b62;
+}
+
+
+.explore-card .quick-icon {
+  background: #f4eadb;
+  color: #b27e47;
+}
+
+
+.quick-card h3 {
+  margin: 0 0 5px;
+
+  font-size: 15px;
+}
+
+
+.quick-card p {
+  margin: 0;
+
+  color: #8a9497;
+
+  font-size: 11px;
+}
+
+
+.card-arrow {
+  position: absolute;
+
+  right: 20px;
+
+  color: #849196;
+
+  font-size: 20px;
+}
+
+
+/* =====================================================
+   TRIPS
+===================================================== */
+
+.trip-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(3, 1fr);
+
+  gap: 18px;
+}
+
+
+.trip-card {
+  overflow: hidden;
+
+  border-radius: 18px;
+
+  background: white;
+
+  border: 1px solid #e3e2dd;
+
+  box-shadow:
+    0 8px 25px rgba(26,50,59,0.04);
+}
+
+
+.trip-image {
+  height: 175px;
+
+  position: relative;
+
+  background-size: cover;
+  background-position: center;
+}
+
+
+.japan-image {
+  background:
+    linear-gradient(
+      rgba(20,40,50,0.08),
+      rgba(20,40,50,0.2)
+    ),
+    url("../assets/japan.jpg");
+}
+
+
+.rajasthan-image {
+  background:
+    linear-gradient(
+      rgba(20,40,50,0.08),
+      rgba(20,40,50,0.2)
+    ),
+    url("../assets/rajasthan.jpg");
+}
+
+
+.trip-status {
+  position: absolute;
+
+  top: 13px;
+  left: 13px;
+
+  padding: 6px 10px;
+
+  border-radius: 20px;
+
+  background: rgba(255,255,255,0.9);
+
+  color: #234753;
+
+  font-size: 9px;
+
+  font-weight: 700;
+}
+
+
+.trip-heart {
+  position: absolute;
+
+  top: 12px;
+  right: 12px;
+
+  width: 32px;
+  height: 32px;
+
+  border: none;
+
+  border-radius: 50%;
+
+  background: rgba(255,255,255,0.9);
+
+  color: #59696f;
+
+  cursor: pointer;
+}
+
+
+.trip-info {
+  display: flex;
+  justify-content: space-between;
+
+  padding: 18px 18px 10px;
+}
+
+
+.trip-info h3 {
+  margin: 0 0 5px;
+
+  font-size: 18px;
+}
+
+
+.trip-info p {
+  margin: 0;
+
+  color: #899397;
+
+  font-size: 10px;
+}
+
+
+.trip-days {
+  color: #8a9498;
+
+  font-size: 10px;
+}
+
+
+.trip-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 5px 18px 18px;
+}
+
+
+.trip-bottom strong {
+  color: #173d4b;
+
+  font-size: 14px;
+}
+
+
+.trip-bottom button {
+  border: none;
+
+  background: transparent;
+
+  color: #154b5b;
+
+  font-size: 11px;
+
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+
+/* NEW TRIP */
+
+.new-trip-card {
+  min-height: 300px;
+
+  border: 1.5px dashed #cfd2cd;
+
+  border-radius: 18px;
+
+  background: transparent;
+
+  display: flex;
+  flex-direction: column;
+
+  align-items: center;
+  justify-content: center;
+
+  cursor: pointer;
+
+  color: #50656c;
+}
+
+
+.new-trip-card:hover {
+  background: #fbfaf7;
+
+  border-color: #a8b2b2;
+}
+
+
+.new-trip-icon {
+  width: 52px;
+  height: 52px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: #e8eeee;
+
+  color: #285666;
+
+  font-size: 28px;
+
+  margin-bottom: 14px;
+}
+
+
+.new-trip-card h3 {
+  margin: 0 0 7px;
+
+  font-size: 15px;
+}
+
+
+.new-trip-card p {
+  margin: 0;
+
+  color: #929b9d;
+
+  font-size: 11px;
+}
+
+
+/* =====================================================
+   DESTINATIONS
+===================================================== */
+
+.destination-filters {
+  display: flex;
+
+  gap: 8px;
+
+  margin-bottom: 20px;
+}
+
+
+.destination-filters button {
+  padding: 8px 15px;
+
+  border: 1px solid #dedfdc;
+
+  border-radius: 20px;
+
+  background: white;
+
+  color: #788489;
+
+  font-size: 11px;
+
+  cursor: pointer;
+}
+
+
+.destination-filters .filter-active {
+  border-color: #123f50;
+
+  background: #123f50;
+
+  color: white;
+}
+
+
+.destination-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(4, 1fr);
+
+  gap: 15px;
+}
+
+
+.destination-card {
+  overflow: hidden;
+
+  border-radius: 17px;
+
+  background: white;
+
+  border: 1px solid #e4e3de;
+}
+
+
+.destination-image {
+  height: 210px;
+
+  position: relative;
+
+  background-size: cover;
+
+  background-position: center;
+}
+
+
+.paris {
+  background-image:
+    linear-gradient(
+      rgba(20,40,50,0.05),
+      rgba(20,40,50,0.4)
+    ),
+    url("../assets/paris.jpg");
+}
+
+
+.tokyo {
+  background-image:
+    linear-gradient(
+      rgba(20,40,50,0.05),
+      rgba(20,40,50,0.4)
+    ),
+    url("../assets/tokyo.jpg");
+}
+
+
+.bali {
+  background-image:
+    linear-gradient(
+      rgba(20,40,50,0.05),
+      rgba(20,40,50,0.4)
+    ),
+    url("../assets/bali.jpg");
+}
+
+
+.switzerland {
+  background-image:
+    linear-gradient(
+      rgba(20,40,50,0.05),
+      rgba(20,40,50,0.4)
+    ),
+    url("../assets/switzerland.jpg");
+}
+
+
+.destination-heart {
+  position: absolute;
+
+  top: 12px;
+  right: 12px;
+
+  width: 32px;
+  height: 32px;
+
+  border: none;
+
+  border-radius: 50%;
+
+  background: rgba(255,255,255,0.92);
+
+  color: #53666c;
+
+  cursor: pointer;
+}
+
+
+.destination-overlay {
+  position: absolute;
+
+  left: 15px;
+  bottom: 15px;
+
+  color: white;
+}
+
+
+.destination-overlay h3 {
+  margin: 0 0 3px;
+
+  font-size: 21px;
+}
+
+
+.destination-overlay span {
+  font-size: 10px;
+
+  opacity: 0.9;
+}
+
+
+.destination-info {
+  padding: 13px;
+}
+
+
+.destination-stats {
+  display: flex;
+
+  justify-content: space-between;
+
+  margin-bottom: 12px;
+
+  color: #829095;
+
+  font-size: 9px;
+}
+
+
+.destination-info button {
+  width: 100%;
+
+  height: 34px;
+
+  border: 1px solid #d7dddc;
+
+  border-radius: 8px;
+
+  background: white;
+
+  color: #19495a;
+
+  font-size: 10px;
+
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+
+.destination-info button:hover {
+  background: #edf3f2;
+}
+
+
+/* =====================================================
+   INSPIRATION
+===================================================== */
+
+.inspiration-banner {
+  position: relative;
+
+  overflow: hidden;
+
+  min-height: 230px;
+
+  margin-top: 70px;
+
+  padding: 38px 45px;
+
+  border-radius: 22px;
+
+  background:
+    linear-gradient(
+      110deg,
+      #153d4c,
+      #285d68
+    );
+
+  color: white;
+}
+
+
+.inspiration-banner p {
+  margin: 0 0 9px;
+
+  color: #d9ae77;
+
+  font-size: 10px;
+
+  letter-spacing: 2px;
+
+  font-weight: 700;
+}
+
+
+.inspiration-banner h2 {
+  margin: 0;
+
+  font-size: 28px;
+
+  line-height: 1.2;
+
+  letter-spacing: -1px;
+}
+
+
+.inspiration-banner button {
+  margin-top: 22px;
+
+  padding: 11px 18px;
+
+  border: none;
+
+  border-radius: 8px;
+
+  background: white;
+
+  color: #164351;
+
+  font-size: 11px;
+
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+
+.inspiration-plane {
+  position: absolute;
+
+  right: 12%;
+
+  top: 50px;
+
+  font-size: 100px;
+
+  opacity: 0.12;
+
+  transform: rotate(-20deg);
+}
+
+
+/* =====================================================
+   TABLET
+===================================================== */
+
+@media (max-width: 1000px) {
+
+  .dashboard-main {
+    width: 90%;
+  }
+
+  .dashboard-welcome {
+    flex-direction: column;
+
+    align-items: stretch;
+  }
+
+  .dashboard-search {
+    width: 100%;
+  }
+
+  .destination-grid {
+    grid-template-columns:
+      repeat(2, 1fr);
+  }
+
+}
+
+
+/* =====================================================
+   MOBILE
+===================================================== */
+
+@media (max-width: 700px) {
+
+  .dashboard-nav {
+    height: 67px;
+
+    padding: 0 18px;
+  }
+
+  .dashboard-logo {
+    font-size: 18px;
+  }
+
+  .dashboard-links {
+    display: none;
+  }
+
+  .profile-name {
+    display: none;
+  }
+
+  .notification {
+    display: none;
+  }
+
+  .dashboard-main {
+    width: calc(100% - 32px);
+
+    padding-top: 35px;
+  }
+
+  .dashboard-welcome {
+    margin-bottom: 35px;
+  }
+
+  .dashboard-welcome h1 {
+    font-size: 43px;
+
+    letter-spacing: -2px;
+  }
+
+  .welcome-description {
+    font-size: 13px;
+  }
+
+  .dashboard-search {
+    height: 52px;
+  }
+
+  .dashboard-search button {
+    display: none;
+  }
+
+  .quick-actions {
+    grid-template-columns: 1fr;
+  }
+
+  .trip-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .new-trip-card {
+    min-height: 180px;
+  }
+
+  .destination-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .destination-filters {
+    overflow-x: auto;
+
+    padding-bottom: 5px;
+  }
+
+  .destination-filters button {
+    flex-shrink: 0;
+  }
+
+  .inspiration-banner {
+    padding: 30px 25px;
+  }
+
+  .inspiration-banner h2 {
+    font-size: 23px;
+  }
+
+  .inspiration-plane {
+    display: none;
+  }
+
+}
