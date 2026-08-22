@@ -47,11 +47,62 @@ throws at request time.
 ## Stack
 
 Next.js 16 (App Router) · TypeScript · Tailwind v4 · shadcn/ui · Prisma 6 ·
-PostgreSQL · Zod · Vitest
+PostgreSQL · Zod · Vitest · **@dnd-kit/core** · **@dnd-kit/sortable**
 
 There is no REST layer. Server Components read the database directly and
 Server Actions write to it, so authentication, validation, and error shaping
 all happen at one choke point instead of three.
+
+---
+
+## Trip planning features (Prompt 2)
+
+### Trip templates
+On `/trips/new` a collapsible gallery lists five ready-made itineraries
+(Southeast Asia Loop, Europe Highlights, Japan Rail, Golden Triangle India,
+Australia East Coast). Selecting one and pressing **Create from template**
+calls `src/actions/template.ts` → `createTripFromTemplate`, which atomically
+creates the Trip row and appends Stops via `lib/stop-order.ts`, then redirects
+to the builder. City names that don't match the catalogue are silently skipped.
+
+### Itinerary view (list + calendar)
+`/trips/[id]` now renders `src/components/trip/itinerary-view.tsx`, which
+exposes a **List / Calendar** toggle in the top-left corner:
+
+- **List** — day-wise timeline per city, with activity time, duration, cost,
+  and drag handles for reordering.
+- **Calendar** — a responsive grid card per day showing the city and a compact
+  activity preview.
+
+### Drag-and-drop reordering
+Implemented with `@dnd-kit/core` and `@dnd-kit/sortable`:
+
+| Where | Component | Persists via |
+|---|---|---|
+| Builder: city stops | `sortable-stop-list.tsx` | `moveStop` server action |
+| Itinerary: activities within a day | `sortable-activity-list.tsx` | `moveTripActivity` server action |
+
+Both expose keyboard arrow buttons as a fallback for users who cannot or prefer
+not to use drag.
+
+### Schedule hints
+After each activity list, `schedule-hints.tsx` inspects start times and flags:
+- 🔴 **Conflicts** — two activities whose time windows overlap
+- 🟡 **Gaps** — idle stretches > 3 hours between consecutive activities
+- 🔵 **Ordering** — a later start-time appearing before an earlier one in the
+  list order
+
+Hints update immediately after every drag without a server round-trip.
+
+### "Glimpse of the trip" animation
+The trip layout header cycles through city names with a smooth fade-transition
+via `src/components/trip/trip-glimpse.tsx`. When
+`prefers-reduced-motion: reduce` is set, it renders a static comma-separated
+list instead.
+
+### "Read more / Show less"
+Long trip descriptions are truncated at 140 characters with an accessible
+toggle via `src/components/trip/read-more.tsx`.
 
 ---
 
