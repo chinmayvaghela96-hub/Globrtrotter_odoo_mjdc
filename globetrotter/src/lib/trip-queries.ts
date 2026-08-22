@@ -2,6 +2,7 @@ import { prisma } from "@/lib/db"
 import { money, moneyOrNull } from "@/lib/serialize"
 import { formatDateUTC } from "@/lib/dates"
 import { computeBudget, type BudgetBreakdown, type CostCategory } from "@/lib/budget"
+import { getCityImageUrl } from "@/lib/city-images"
 
 /**
  * The query boundary.
@@ -57,10 +58,10 @@ export async function getTripBudget(tripId: string): Promise<BudgetBreakdown | n
   })
 }
 
-/** Trip cards for the dashboard and the trip list. */
+/** Trip cards for the user's personal dashboard and "My Trips" list. (Strictly non-curated). */
 export async function getTripSummaries(userId: string, take?: number) {
   const trips = await prisma.trip.findMany({
-    where: { userId },
+    where: { userId, isCurated: false },
     orderBy: { startDate: "asc" },
     take,
     select: {
@@ -79,7 +80,7 @@ export async function getTripSummaries(userId: string, take?: number) {
           arrivalDate: true,
           transportCost: true,
           stayCost: true,
-          city: { select: { name: true, country: true } },
+          city: { select: { name: true, country: true, imageUrl: true } },
           activities: { select: { scheduledDate: true, cost: true } },
         },
       },
@@ -109,13 +110,16 @@ export async function getTripSummaries(userId: string, take?: number) {
       })),
     })
 
+    const primaryCity = trip.stops[0]?.city.name
+    const coverImage = trip.coverUrl || (primaryCity ? getCityImageUrl(primaryCity) : null)
+
     return {
       id: trip.id,
       name: trip.name,
       description: trip.description,
       startDate: trip.startDate,
       endDate: trip.endDate,
-      coverUrl: trip.coverUrl,
+      coverUrl: coverImage,
       currency: trip.currency,
       isPublic: trip.isPublic,
       stopCount: trip.stops.length,
@@ -127,6 +131,84 @@ export async function getTripSummaries(userId: string, take?: number) {
 }
 
 export type TripSummary = Awaited<ReturnType<typeof getTripSummaries>>[number]
+
+/** Curated inspiration itineraries for the Inspiration section. (Strictly isCurated: true). */
+export async function getInspirationTrips(take?: number) {
+  const trips = await prisma.trip.findMany({
+    where: { isCurated: true },
+    orderBy: { createdAt: "asc" },
+    take,
+    select: {
+      id: true,
+      name: true,
+      description: true,
+      startDate: true,
+      endDate: true,
+      coverUrl: true,
+      currency: true,
+      shareSlug: true,
+      budgetCap: true,
+      stops: {
+        orderBy: { orderIndex: "asc" },
+        select: {
+          id: true,
+          arrivalDate: true,
+          departureDate: true,
+          transportCost: true,
+          stayCost: true,
+          city: {
+            select: { id: true, name: true, country: true, imageUrl: true, costIndex: true },
+          },
+          activities: {
+            select: {
+              id: true,
+              cost: true,
+              durationMin: true,
+              activity: { select: { name: true, category: true } },
+            },
+          },
+        },
+      },
+    },
+  })
+
+  return trips.map((trip) => {
+    const primaryCity = trip.stops[0]?.city.name
+    const coverImage = trip.coverUrl || (primaryCity ? getCityImageUrl(primaryCity) : null)
+
+    const estimatedSpend = trip.stops.reduce(
+      (sum, s) =>
+        sum +
+        money(s.transportCost) +
+        money(s.stayCost) +
+        s.activities.reduce((aSum, a) => aSum + money(a.cost), 0),
+      0,
+    )
+
+    return {
+      id: trip.id,
+      name: trip.name,
+      description: trip.description,
+      startDate: formatDateUTC(trip.startDate),
+      endDate: formatDateUTC(trip.endDate),
+      coverUrl: coverImage,
+      currency: trip.currency,
+      shareSlug: trip.shareSlug,
+      budgetCap: moneyOrNull(trip.budgetCap),
+      stopCount: trip.stops.length,
+      cities: trip.stops.map((s) => s.city.name),
+      stops: trip.stops.map((s) => ({
+        city: s.city.name,
+        country: s.city.country,
+        imageUrl: getCityImageUrl(s.city.name, s.city.imageUrl),
+        activitiesCount: s.activities.length,
+      })),
+      estimatedSpend,
+    }
+  })
+}
+
+export type InspirationTrip = Awaited<ReturnType<typeof getInspirationTrips>>[number]
 
 /**
  * The full trip graph, flattened into plain data for rendering.
@@ -162,6 +244,7 @@ export async function getTripDetail(tripId: string) {
     currency: trip.currency,
     budgetCap: moneyOrNull(trip.budgetCap),
     isPublic: trip.isPublic,
+    isCurated: trip.isCurated,
     shareSlug: trip.shareSlug,
     stopCount: trip.stops.length,
     stops: trip.stops.map((stop) => ({
@@ -178,12 +261,10 @@ export async function getTripDetail(tripId: string) {
         country: stop.city.country,
         region: stop.city.region,
         costIndex: stop.city.costIndex,
-        imageUrl: stop.city.imageUrl,
+        imageUrl: getCityImageUrl(stop.city.name, stop.city.imageUrl),
       },
       activities: stop.activities.map((entry) => ({
         id: entry.id,
-        // `customName` survives a deleted catalogue entry, which is why the
-        // schema sets `activityId` to null rather than cascading.
         name: entry.activity?.name ?? entry.customName ?? "Untitled activity",
         category: entry.activity?.category ?? null,
         scheduledDate: formatDateUTC(entry.scheduledDate),
@@ -208,7 +289,7 @@ export async function getCityOptions() {
 
 /** Recommended destinations for the dashboard. */
 export async function getRecommendedCities(take = 6) {
-  return prisma.city.findMany({
+  const cities = await prisma.city.findMany({
     orderBy: { popularity: "desc" },
     take,
     select: {
@@ -221,6 +302,11 @@ export async function getRecommendedCities(take = 6) {
       imageUrl: true,
     },
   })
+
+  return cities.map((c) => ({
+    ...c,
+    imageUrl: getCityImageUrl(c.name, c.imageUrl),
+  }))
 }
 
 /** Standalone expenses for a trip. */

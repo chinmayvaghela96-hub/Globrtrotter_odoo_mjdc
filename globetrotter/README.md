@@ -106,6 +106,30 @@ toggle via `src/components/trip/read-more.tsx`.
 
 ---
 
+## Inspiration & Curated Itineraries
+
+### Data separation
+Trips are split at the database/query layer:
+- **User Custom Trips** (`isCurated: false`) — belong to users, appear in **My Trips** and user dashboard.
+- **Curated Inspiration Itineraries** (`isCurated: true`) — seeded classic itineraries attached to system curator (`seed_user_curator`), appear in **Inspiration** (`/inspiration`) and Inspiration highlights. Never pollute a user's personal trip list.
+
+### 8 Classic Curated Itineraries
+1. **European Classics** (Paris → Rome → Florence · 7 days)
+2. **Japan Highlights** (Tokyo → Kyoto → Osaka · 8 days)
+3. **Western Europe Explorer** (London → Paris → Amsterdam · 9 days)
+4. **Rajasthan Heritage** (Jaipur → Jodhpur → Udaipur · 6 days)
+5. **Kerala Escape** (Kochi → Munnar → Alleppey → Varkala · 7 days)
+6. **Southeast Asia Odyssey** (Bangkok → Phuket → Singapore · 8 days)
+7. **Italy Explorer** (Rome → Florence → Venice · 7 days)
+8. **Switzerland Alpine Highlights** (Zurich → Lucerne → Interlaken · 6 days)
+
+---
+
+## Deterministic Landmark Imagery
+All destinations resolve to verified, iconic landmark photography via `src/lib/city-images.ts` (e.g., Paris → Eiffel Tower, Rome → Colosseum, Tokyo → Tokyo Tower, London → Big Ben). Fallback handles arbitrary strings gracefully without mixing unrelated cities.
+
+---
+
 ## How correctness is enforced
 
 ### Authorization lives in the `where` clause

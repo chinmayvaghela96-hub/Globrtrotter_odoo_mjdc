@@ -3,15 +3,16 @@ import { buttonVariants } from "@/components/ui/button"
 import { requireUser } from "@/lib/guard"
 import { labelDateUTC } from "@/lib/dates"
 import { formatMoney } from "@/lib/serialize"
-import { getRecommendedCities, getTripSummaries } from "@/lib/trip-queries"
+import { getInspirationTrips, getRecommendedCities, getTripSummaries } from "@/lib/trip-queries"
 
 export const metadata = { title: "Dashboard · GlobeTrotter" }
 
 export default async function DashboardPage() {
   const user = await requireUser()
-  const [trips, cities] = await Promise.all([
+  const [trips, cities, inspirations] = await Promise.all([
     getTripSummaries(user.id),
     getRecommendedCities(6),
+    getInspirationTrips(3),
   ])
 
   const today = new Date()
@@ -20,6 +21,7 @@ export default async function DashboardPage() {
 
   return (
     <div className="flex flex-col gap-10">
+      {/* Welcome & Action Banner */}
       <section className="flex flex-wrap items-end justify-between gap-4">
         <div className="flex flex-col gap-1">
           <h1 className="text-2xl font-semibold tracking-tight">
@@ -31,11 +33,17 @@ export default async function DashboardPage() {
               : "Nothing planned yet. That is easy to fix."}
           </p>
         </div>
-        <Link href="/trips/new" className={buttonVariants()}>
-          Plan a new trip
-        </Link>
+        <div className="flex items-center gap-2">
+          <Link href="/inspiration" className={buttonVariants({ variant: "outline" })}>
+            Explore inspiration
+          </Link>
+          <Link href="/trips/new" className={buttonVariants()}>
+            Plan a new trip
+          </Link>
+        </div>
       </section>
 
+      {/* Stats Summary */}
       <section className="grid gap-4 sm:grid-cols-3">
         <Stat label="Trips planned" value={String(trips.length)} />
         <Stat
@@ -49,6 +57,7 @@ export default async function DashboardPage() {
         />
       </section>
 
+      {/* User's Personal Trips */}
       <section className="flex flex-col gap-4">
         <div className="flex items-baseline justify-between">
           <h2 className="text-lg font-semibold tracking-tight">Your trips</h2>
@@ -91,9 +100,62 @@ export default async function DashboardPage() {
         )}
       </section>
 
+      {/* Curated Classic Itineraries for Inspiration */}
+      {inspirations.length > 0 && (
+        <section className="flex flex-col gap-4">
+          <div className="flex items-baseline justify-between">
+            <div className="flex items-center gap-2">
+              <h2 className="text-lg font-semibold tracking-tight">Classic Inspiration</h2>
+              <span className="rounded-full bg-primary/10 px-2 py-0.5 text-[11px] font-medium text-primary">
+                Curated
+              </span>
+            </div>
+            <Link href="/inspiration" className="text-sm text-muted-foreground hover:underline">
+              Explore all
+            </Link>
+          </div>
+
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {inspirations.map((itinerary) => (
+              <Link
+                key={itinerary.id}
+                href={`/t/${itinerary.shareSlug}`}
+                className="group flex flex-col overflow-hidden rounded-xl border bg-card transition-all hover:border-foreground/25 hover:shadow-xs"
+              >
+                <div className="relative h-32 w-full overflow-hidden bg-muted">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={itinerary.coverUrl || "/hero.jpg"}
+                    alt={itinerary.name}
+                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    loading="lazy"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
+                  <span className="absolute bottom-2 left-3 text-sm font-bold text-white drop-shadow-xs">
+                    {itinerary.name}
+                  </span>
+                </div>
+                <div className="flex flex-1 flex-col justify-between p-3.5">
+                  <p className="text-xs text-muted-foreground line-clamp-2">
+                    {itinerary.description}
+                  </p>
+                  <div className="mt-3 flex items-center justify-between text-xs font-medium">
+                    <span className="text-muted-foreground">{itinerary.cities.join(" → ")}</span>
+                    <span className="tabular-nums font-semibold text-foreground">
+                      {formatMoney(itinerary.estimatedSpend, itinerary.currency)}
+                    </span>
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Popular Cities with Authentic Landmark Images */}
       <section className="flex flex-col gap-4">
         <div className="flex items-baseline justify-between">
-          <h2 className="text-lg font-semibold tracking-tight">Popular right now</h2>
+          <h2 className="text-lg font-semibold tracking-tight">Popular destinations</h2>
           <Link href="/cities" className="text-sm text-muted-foreground hover:underline">
             Browse all cities
           </Link>
@@ -109,8 +171,8 @@ export default async function DashboardPage() {
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={city.imageUrl}
-                alt=""
-                className="h-32 w-full object-cover"
+                alt={city.name}
+                className="h-32 w-full object-cover transition-transform duration-300 group-hover:scale-105"
                 loading="lazy"
               />
               <div className="flex items-center justify-between gap-3 p-4">

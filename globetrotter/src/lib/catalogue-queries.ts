@@ -1,6 +1,7 @@
 import type { ActivityCategory, Prisma } from "@prisma/client"
 import { prisma } from "@/lib/db"
 import { money } from "@/lib/serialize"
+import { getCityImageUrl } from "@/lib/city-images"
 
 /**
  * Catalogue reads.
@@ -40,7 +41,7 @@ export async function searchCities(filters: CityFilters = {}) {
   if (filters.region) where.region = filters.region
   if (filters.maxCost !== undefined) where.costIndex = { lte: filters.maxCost }
 
-  return prisma.city.findMany({
+  const rows = await prisma.city.findMany({
     where,
     orderBy: CITY_ORDER[filters.sort ?? "popularity"],
     select: {
@@ -54,6 +55,11 @@ export async function searchCities(filters: CityFilters = {}) {
       _count: { select: { activities: true } },
     },
   })
+
+  return rows.map((c) => ({
+    ...c,
+    imageUrl: getCityImageUrl(c.name, c.imageUrl),
+  }))
 }
 
 export type CityResult = Awaited<ReturnType<typeof searchCities>>[number]

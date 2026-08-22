@@ -17,12 +17,12 @@ export function findOwnedTrip(userId: string, tripId: string) {
   return prisma.trip.findFirst({ where: { id: tripId, userId } })
 }
 
-/** The owner, or anyone at all when the trip has been made public. */
+/** The owner, anyone when public, or anyone when curated. */
 export function findReadableTrip(userId: string | null, tripId: string) {
   return prisma.trip.findFirst({
     where: {
       id: tripId,
-      OR: [{ isPublic: true }, ...(userId ? [{ userId }] : [])],
+      OR: [{ isPublic: true }, { isCurated: true }, ...(userId ? [{ userId }] : [])],
     },
   })
 }
