@@ -6,28 +6,9 @@ import { cookies } from "next/headers"
 import { z } from "zod"
 import { action } from "@/lib/action"
 import { prisma } from "@/lib/db"
+import { CURRENCY_VALUES, LANGUAGE_VALUES } from "@/lib/preferences"
 import { rejectField } from "@/lib/result"
 import { SESSION_COOKIE } from "@/lib/session"
-
-export const LANGUAGES = [
-  { value: "en", label: "English" },
-  { value: "hi", label: "Hindi" },
-  { value: "fr", label: "French" },
-  { value: "es", label: "Spanish" },
-  { value: "de", label: "German" },
-  { value: "ja", label: "Japanese" },
-] as const
-
-export const CURRENCIES = [
-  { value: "INR", label: "Indian rupee (INR)" },
-  { value: "USD", label: "US dollar (USD)" },
-  { value: "EUR", label: "Euro (EUR)" },
-  { value: "GBP", label: "Pound sterling (GBP)" },
-  { value: "JPY", label: "Japanese yen (JPY)" },
-  { value: "AUD", label: "Australian dollar (AUD)" },
-  { value: "SGD", label: "Singapore dollar (SGD)" },
-  { value: "THB", label: "Thai baht (THB)" },
-] as const
 
 /**
  * `role` is deliberately absent from this schema.
@@ -42,8 +23,8 @@ const UpdateProfileInput = z.object({
     (value) => (value === "" || value === null ? undefined : value),
     z.url("Enter a full URL, starting with https://").optional(),
   ),
-  language: z.enum(LANGUAGES.map((l) => l.value) as [string, ...string[]]),
-  currency: z.enum(CURRENCIES.map((c) => c.value) as [string, ...string[]]),
+  language: z.enum(LANGUAGE_VALUES as [string, ...string[]]),
+  currency: z.enum(CURRENCY_VALUES as [string, ...string[]]),
 })
 
 /** Deleting an account is irreversible, so it asks for the email back. */
