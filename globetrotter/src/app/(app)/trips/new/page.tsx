@@ -1,5 +1,6 @@
 import Link from "next/link"
 import { CreateTripForm } from "@/components/trip/create-trip-form"
+import { TripTemplates } from "@/components/trip/trip-templates"
 import { addDaysUTC, formatDateUTC } from "@/lib/dates"
 import { requireUser } from "@/lib/guard"
 
@@ -26,8 +27,17 @@ export default async function NewTripPage() {
         </Link>
         <h1 className="text-2xl font-semibold tracking-tight">Plan a new trip</h1>
         <p className="text-sm text-muted-foreground">
-          Name it and set the dates. You will add cities next.
+          Start from a template or name it and set the dates yourself.
         </p>
+      </div>
+
+      {/* Quick-start templates */}
+      <TripTemplates />
+
+      <div className="flex items-center gap-3">
+        <div className="h-px flex-1 bg-border" />
+        <span className="text-xs text-muted-foreground">or create from scratch</span>
+        <div className="h-px flex-1 bg-border" />
       </div>
 
       <CreateTripForm

@@ -246,3 +246,12 @@ export async function getTripExpenses(tripId: string) {
   }))
 }
 
+/** Minimal city names for the trip layout header (TripGlimpse). */
+export async function getTripCityNames(tripId: string): Promise<string[]> {
+  const stops = await prisma.stop.findMany({
+    where: { tripId },
+    orderBy: { orderIndex: "asc" },
+    select: { city: { select: { name: true } } },
+  })
+  return stops.map((s) => s.city.name)
+}

@@ -1,8 +1,11 @@
 import Link from "next/link"
 import { ShareDialog } from "@/components/share/share-dialog"
 import { TripTabs } from "@/components/trip/trip-tabs"
+import { ReadMore } from "@/components/trip/read-more"
+import { TripGlimpse } from "@/components/trip/trip-glimpse"
 import { dayCountUTC, labelDateUTC } from "@/lib/dates"
 import { requireTripOwner } from "@/lib/guard"
+import { getTripCityNames } from "@/lib/trip-queries"
 
 /**
  * The ownership check for every child route lives here, once.
@@ -21,6 +24,7 @@ export default async function TripLayout({
   const { trip } = await requireTripOwner(id)
 
   const days = dayCountUTC(trip.startDate, trip.endDate)
+  const cities = await getTripCityNames(trip.id)
 
   return (
     <div className="flex flex-col gap-6">
@@ -36,6 +40,9 @@ export default async function TripLayout({
               {labelDateUTC(trip.startDate)} — {labelDateUTC(trip.endDate)} ·{" "}
               {days} {days === 1 ? "day" : "days"}
             </p>
+            {cities.length > 0 && (
+              <TripGlimpse cities={cities} tripName={trip.name} />
+            )}
           </div>
 
           <div className="flex items-center gap-2">
@@ -48,9 +55,7 @@ export default async function TripLayout({
         </div>
 
         {trip.description && (
-          <p className="max-w-prose text-sm text-muted-foreground">
-            {trip.description}
-          </p>
+          <ReadMore text={trip.description} />
         )}
       </div>
 

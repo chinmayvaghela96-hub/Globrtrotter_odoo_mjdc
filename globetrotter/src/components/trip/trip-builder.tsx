@@ -1,15 +1,14 @@
 "use client"
 
-import { useActionState, useTransition } from "react"
+import { useActionState } from "react"
 import { toast } from "sonner"
-import { addStop, moveStop, removeStop, updateStopCosts } from "@/actions/stop"
+import { addStop } from "@/actions/stop"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { labelDateUTC, parseDateUTC } from "@/lib/dates"
+import { SortableStopList } from "@/components/trip/sortable-stop-list"
 import type { ActionResult } from "@/lib/result"
-import { formatMoney } from "@/lib/serialize"
-import type { TripDetail, TripDetailStop } from "@/lib/trip-queries"
+import type { TripDetail } from "@/lib/trip-queries"
 
 type CityOption = {
   id: string
@@ -52,27 +51,12 @@ export function TripBuilder({
         <div className="flex items-baseline justify-between gap-4">
           <h2 className="text-lg font-semibold tracking-tight">Stops</h2>
           <span className="text-sm text-muted-foreground">
-            {trip.stops.length} of {trip.stopCount} in order
+            {trip.stops.length} {trip.stops.length === 1 ? "city" : "cities"} · drag to reorder
           </span>
         </div>
 
-        {trip.stops.length === 0 ? (
-          <p className="rounded-xl border border-dashed p-6 text-sm text-muted-foreground">
-            No cities yet. Add the first one below.
-          </p>
-        ) : (
-          <ol className="flex flex-col gap-3">
-            {trip.stops.map((stop, index) => (
-              <StopRow
-                key={stop.id}
-                stop={stop}
-                index={index}
-                lastIndex={trip.stops.length - 1}
-                currency={trip.currency}
-              />
-            ))}
-          </ol>
-        )}
+        {/* Sortable drag-and-drop stop list */}
+        <SortableStopList stops={trip.stops} currency={trip.currency} />
       </section>
 
       <section className="flex flex-col gap-4 rounded-xl border bg-card p-5">
@@ -164,193 +148,5 @@ export function TripBuilder({
         </form>
       </section>
     </div>
-  )
-}
-
-function StopRow({
-  stop,
-  index,
-  lastIndex,
-  currency,
-}: {
-  stop: TripDetailStop
-  index: number
-  lastIndex: number
-  currency: string
-}) {
-  const [pending, startTransition] = useTransition()
-
-  /** Every mutation returns a result; nothing here throws at the user. */
-  const run = (
-    fn: () => Promise<ActionResult<unknown>>,
-    success: string,
-  ) =>
-    startTransition(async () => {
-      const result = await fn()
-      if (result.ok) toast.success(success)
-      else toast.error(result.error)
-    })
-
-  const activityTotal = stop.activities.reduce((sum, a) => sum + a.cost, 0)
-
-  return (
-    <li className="flex flex-col gap-4 rounded-xl border bg-card p-4">
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div className="flex items-baseline gap-3">
-          <span className="font-mono text-xs text-muted-foreground tabular-nums">
-            {String(index + 1).padStart(2, "0")}
-          </span>
-          <div className="flex flex-col">
-            <span className="font-medium leading-tight">
-              {stop.city.name}
-              <span className="ml-2 text-sm font-normal text-muted-foreground">
-                {stop.city.country}
-              </span>
-            </span>
-            <span className="text-sm text-muted-foreground">
-              {labelDateUTC(parseDateUTC(stop.arrivalDate))} —{" "}
-              {labelDateUTC(parseDateUTC(stop.departureDate))}
-              {stop.activities.length > 0 && (
-                <>
-                  {" · "}
-                  {stop.activities.length}{" "}
-                  {stop.activities.length === 1 ? "activity" : "activities"} ·{" "}
-                  {formatMoney(activityTotal, currency)}
-                </>
-              )}
-            </span>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-1">
-          <Button
-            type="button"
-            variant="outline"
-            size="icon-sm"
-            aria-label={`Move ${stop.city.name} earlier`}
-            disabled={pending || index === 0}
-            onClick={() =>
-              run(
-                () => moveStop({ stopId: stop.id, toIndex: index - 1 }),
-                `${stop.city.name} moved earlier`,
-              )
-            }
-          >
-            ↑
-          </Button>
-          <Button
-            type="button"
-            variant="outline"
-            size="icon-sm"
-            aria-label={`Move ${stop.city.name} later`}
-            disabled={pending || index === lastIndex}
-            onClick={() =>
-              run(
-                () => moveStop({ stopId: stop.id, toIndex: index + 1 }),
-                `${stop.city.name} moved later`,
-              )
-            }
-          >
-            ↓
-          </Button>
-          <Button
-            type="button"
-            variant="destructive"
-            size="sm"
-            disabled={pending}
-            onClick={() => {
-              if (
-                !confirm(
-                  `Remove ${stop.city.name}? Its ${stop.activities.length} scheduled ${
-                    stop.activities.length === 1 ? "activity goes" : "activities go"
-                  } with it.`,
-                )
-              ) {
-                return
-              }
-              run(() => removeStop({ stopId: stop.id }), `${stop.city.name} removed`)
-            }}
-          >
-            Remove
-          </Button>
-        </div>
-      </div>
-
-      <StopCostForm stop={stop} currency={currency} />
-    </li>
-  )
-}
-
-function StopCostForm({
-  stop,
-  currency,
-}: {
-  stop: TripDetailStop
-  currency: string
-}) {
-  const [state, formAction, saving] = useActionState<FormState, FormData>(
-    async (_previous, formData) => {
-      const values = Object.fromEntries(formData) as Record<string, string>
-      const result = await updateStopCosts(values)
-      if (result.ok) toast.success("Costs saved")
-      else toast.error(result.error)
-      return { result, values }
-    },
-    null,
-  )
-
-  const failed = state && !state.result.ok ? state.result : null
-
-  return (
-    <form
-      action={formAction}
-      className="flex flex-wrap items-end gap-3 border-t pt-3"
-    >
-      <input type="hidden" name="stopId" value={stop.id} />
-
-      <div className="flex flex-col gap-1.5">
-        <Label htmlFor={`transport-${stop.id}`} className="text-xs">
-          Transport ({currency})
-        </Label>
-        <Input
-          id={`transport-${stop.id}`}
-          name="transportCost"
-          type="number"
-          min="0"
-          step="100"
-          inputMode="numeric"
-          className="w-32"
-          defaultValue={stop.transportCost}
-          aria-invalid={Boolean(failed?.fields?.transportCost)}
-        />
-      </div>
-
-      <div className="flex flex-col gap-1.5">
-        <Label htmlFor={`stay-${stop.id}`} className="text-xs">
-          Stay ({currency})
-        </Label>
-        <Input
-          id={`stay-${stop.id}`}
-          name="stayCost"
-          type="number"
-          min="0"
-          step="100"
-          inputMode="numeric"
-          className="w-32"
-          defaultValue={stop.stayCost}
-          aria-invalid={Boolean(failed?.fields?.stayCost)}
-        />
-      </div>
-
-      <Button type="submit" variant="outline" size="sm" disabled={saving}>
-        {saving ? "Saving..." : "Save costs"}
-      </Button>
-
-      {failed && (
-        <p className="text-sm text-destructive">
-          {failed.fields?.transportCost ?? failed.fields?.stayCost ?? failed.error}
-        </p>
-      )}
-    </form>
   )
 }
