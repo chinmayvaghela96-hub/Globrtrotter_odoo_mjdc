@@ -1,7 +1,8 @@
 "use client"
 
 import { useState, useTransition } from "react"
-import { createTripFromTemplate, TEMPLATES } from "@/actions/template"
+import { createTripFromTemplate } from "@/actions/template"
+import { TEMPLATES } from "@/lib/trip-templates"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"

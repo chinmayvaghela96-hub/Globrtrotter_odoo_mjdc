@@ -63,6 +63,42 @@ const PROVIDERS: Record<string, MapProvider> = {
     },
   },
 
+  google: {
+    id: "google",
+    name: "Google Maps",
+    attribution: "Map data © Google",
+    buildStaticUrl({ markers, width, height, retina }, apiKey) {
+      // Google groups markers by style, so the primary pin and the rest go in
+      // two separate `markers` parameters rather than one list.
+      const url = new URL("https://maps.googleapis.com/maps/api/staticmap")
+      url.searchParams.set("size", `${width}x${height}`)
+      url.searchParams.set("scale", retina === false ? "1" : "2")
+      url.searchParams.set("maptype", "roadmap")
+
+      const primary = markers.filter((m) => m.primary)
+      const rest = markers.filter((m) => !m.primary)
+
+      if (primary.length) {
+        url.searchParams.append(
+          "markers",
+          `color:0x${PRIMARY_COLOUR}|size:mid|` +
+            primary.map((m) => `${m.latitude},${m.longitude}`).join("|"),
+        )
+      }
+      if (rest.length) {
+        url.searchParams.append(
+          "markers",
+          `color:0x${NEARBY_COLOUR}|size:small|` +
+            rest.map((m) => `${m.latitude},${m.longitude}`).join("|"),
+        )
+      }
+
+      // No center/zoom: with markers present Google frames them itself.
+      url.searchParams.set("key", apiKey)
+      return url.toString()
+    },
+  },
+
   mapbox: {
     id: "mapbox",
     name: "Mapbox",
