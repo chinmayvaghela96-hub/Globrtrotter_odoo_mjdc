@@ -41,6 +41,9 @@ const checks = [
   { path: "/trips/new", expect: ["Plan a new trip", "Total budget"] },
   { path: `/trips/${trip.id}`, expect: ["Bangkok", "Chiang Mai", "Ubud"] },
   { path: `/trips/${trip.id}/build`, expect: ["Stops", "Add a stop", "Save costs"] },
+  { path: `/trips/${trip.id}/budget`, expect: ["Total Planned Spend", "Category Distribution", "Daily Spending Timeline"] },
+  { path: `/trips/${trip.id}/calendar`, expect: ["Timeline & Daily Schedule", "Day 1"] },
+  { path: "/t/sea-loop-demo", expect: ["Southeast Asia Loop", "Public Itinerary"] },
 ]
 
 let failures = 0

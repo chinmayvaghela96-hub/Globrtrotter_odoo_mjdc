@@ -1,4 +1,5 @@
 import Link from "next/link"
+import { ShareDialog } from "@/components/share/share-dialog"
 import { TripTabs } from "@/components/trip/trip-tabs"
 import { dayCountUTC, labelDateUTC } from "@/lib/dates"
 import { requireTripOwner } from "@/lib/guard"
@@ -37,14 +38,13 @@ export default async function TripLayout({
             </p>
           </div>
 
-          {trip.isPublic && trip.shareSlug && (
-            <Link
-              href={`/t/${trip.shareSlug}`}
-              className="rounded-full border px-3 py-1 text-xs text-muted-foreground hover:text-foreground"
-            >
-              Public link
-            </Link>
-          )}
+          <div className="flex items-center gap-2">
+            <ShareDialog
+              tripId={trip.id}
+              isPublic={trip.isPublic}
+              shareSlug={trip.shareSlug}
+            />
+          </div>
         </div>
 
         {trip.description && (
