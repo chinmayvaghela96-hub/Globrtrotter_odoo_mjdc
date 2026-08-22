@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/db"
 import { money, moneyOrNull } from "@/lib/serialize"
+import { formatDateUTC } from "@/lib/dates"
 import { computeBudget, type BudgetBreakdown, type CostCategory } from "@/lib/budget"
 
 /**
@@ -126,6 +127,84 @@ export async function getTripSummaries(userId: string, take?: number) {
 }
 
 export type TripSummary = Awaited<ReturnType<typeof getTripSummaries>>[number]
+
+/**
+ * The full trip graph, flattened into plain data for rendering.
+ *
+ * Dates become `yyyy-MM-dd` strings and Decimals become numbers here, so the
+ * result can be handed to a client component without React rejecting it.
+ */
+export async function getTripDetail(tripId: string) {
+  const trip = await prisma.trip.findUnique({
+    where: { id: tripId },
+    include: {
+      stops: {
+        orderBy: { orderIndex: "asc" },
+        include: {
+          city: true,
+          activities: {
+            orderBy: [{ scheduledDate: "asc" }, { orderIndex: "asc" }],
+            include: { activity: { select: { name: true, category: true } } },
+          },
+        },
+      },
+    },
+  })
+
+  if (!trip) return null
+
+  return {
+    id: trip.id,
+    name: trip.name,
+    description: trip.description,
+    startDate: formatDateUTC(trip.startDate),
+    endDate: formatDateUTC(trip.endDate),
+    currency: trip.currency,
+    budgetCap: moneyOrNull(trip.budgetCap),
+    isPublic: trip.isPublic,
+    shareSlug: trip.shareSlug,
+    stopCount: trip.stops.length,
+    stops: trip.stops.map((stop) => ({
+      id: stop.id,
+      orderIndex: stop.orderIndex,
+      arrivalDate: formatDateUTC(stop.arrivalDate),
+      departureDate: formatDateUTC(stop.departureDate),
+      transportCost: money(stop.transportCost),
+      stayCost: money(stop.stayCost),
+      notes: stop.notes,
+      city: {
+        id: stop.city.id,
+        name: stop.city.name,
+        country: stop.city.country,
+        region: stop.city.region,
+        costIndex: stop.city.costIndex,
+        imageUrl: stop.city.imageUrl,
+      },
+      activities: stop.activities.map((entry) => ({
+        id: entry.id,
+        // `customName` survives a deleted catalogue entry, which is why the
+        // schema sets `activityId` to null rather than cascading.
+        name: entry.activity?.name ?? entry.customName ?? "Untitled activity",
+        category: entry.activity?.category ?? null,
+        scheduledDate: formatDateUTC(entry.scheduledDate),
+        startTime: entry.startTime,
+        cost: money(entry.cost),
+        durationMin: entry.durationMin,
+      })),
+    })),
+  }
+}
+
+export type TripDetail = NonNullable<Awaited<ReturnType<typeof getTripDetail>>>
+export type TripDetailStop = TripDetail["stops"][number]
+
+/** Cities for the "add a stop" picker. */
+export async function getCityOptions() {
+  return prisma.city.findMany({
+    orderBy: [{ region: "asc" }, { name: "asc" }],
+    select: { id: true, name: true, country: true, region: true, costIndex: true },
+  })
+}
 
 /** Recommended destinations for the dashboard. */
 export async function getRecommendedCities(take = 6) {

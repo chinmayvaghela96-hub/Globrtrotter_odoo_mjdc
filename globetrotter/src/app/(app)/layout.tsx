@@ -1,4 +1,5 @@
 import Link from "next/link"
+import { Toaster } from "@/components/ui/sonner"
 import { requireUser } from "@/lib/guard"
 import { signOut } from "@/actions/auth"
 import { Button } from "@/components/ui/button"
@@ -76,6 +77,8 @@ export default async function AppLayout({
       </header>
 
       <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-8">{children}</main>
+
+      <Toaster position="bottom-right" />
     </div>
   )
 }

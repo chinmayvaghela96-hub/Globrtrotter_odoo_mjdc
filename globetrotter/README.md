@@ -33,7 +33,14 @@ in `.env` and skip `docker compose`. Nothing else changes.
 | `npm run db:seed` | Seed the catalogue, users, and demo trip |
 | `npm run db:reset` | Drop, re-migrate, re-seed |
 | `npm run db:studio` | Prisma Studio |
-| `npm test` | Vitest |
+| `npm test` | Vitest — 33 tests |
+| `npm run smoke` | HTTP smoke test against a running dev server |
+
+`npm run smoke` mints a real session cookie with the app's own secret and
+fetches every page in the demo path, asserting the content actually rendered —
+including a request for another user's trip, which must come back `404`. It
+catches the class of failure a unit test cannot: a page that typechecks but
+throws at request time.
 
 ---
 
@@ -154,9 +161,11 @@ prisma/
   data/cities.json       45 curated cities
 src/
   lib/
-    guard.ts             authorization — read this first
+    authz.ts             the authorization predicates — read this first
+    guard.ts             session plumbing around authz.ts
     action.ts            the server-action wrapper
     result.ts            ActionResult
+    stop-order.ts        the ordering transactions and their invariant
     budget.ts            pure cost rollup (unit-tested)
     dates.ts             UTC calendar-day helpers
     serialize.ts         the Server -> Client boundary

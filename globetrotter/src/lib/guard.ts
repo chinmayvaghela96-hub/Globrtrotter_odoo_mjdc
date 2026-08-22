@@ -4,9 +4,15 @@ import { notFound, redirect } from "next/navigation"
 import type { User } from "@prisma/client"
 import { prisma } from "@/lib/db"
 import { SESSION_COOKIE, verifySession } from "@/lib/session"
+import {
+  findOwnedStop,
+  findOwnedTrip,
+  findOwnedTripActivity,
+  findReadableTrip,
+} from "@/lib/authz"
 
 /**
- * Authorization, in one place.
+ * Session plumbing wrapped around the predicates in `lib/authz.ts`.
  *
  * The rule for this codebase: **ownership goes in the `where` clause**, never
  * in an `if` after the fetch. There is no window in which an unauthorized row
@@ -15,6 +21,9 @@ import { SESSION_COOKIE, verifySession } from "@/lib/session"
  * Every failure is `notFound()`, never a 403. A 403 confirms that the id
  * exists, which is itself a disclosure; a 404 is indistinguishable from a
  * resource that was never there.
+ *
+ * The predicates live in `authz.ts` rather than here so they can be tested
+ * without a request context — see `tests/authz.test.ts`.
  */
 
 /** Resolves the signed-in user at most once per request. */
@@ -43,9 +52,7 @@ export async function requireAdmin(): Promise<User> {
 /** Owner-only access to a trip: read, update, and delete. */
 export async function requireTripOwner(tripId: string) {
   const user = await requireUser()
-  const trip = await prisma.trip.findFirst({
-    where: { id: tripId, userId: user.id }, // <- the entire check
-  })
+  const trip = await findOwnedTrip(user.id, tripId)
   if (!trip) notFound()
   return { user, trip }
 }
@@ -53,38 +60,21 @@ export async function requireTripOwner(tripId: string) {
 /** Read access: the owner, or anyone at all when the trip is public. */
 export async function requireTripReadable(tripId: string) {
   const user = await currentUser() // may legitimately be null
-  const trip = await prisma.trip.findFirst({
-    where: {
-      id: tripId,
-      OR: [{ isPublic: true }, ...(user ? [{ userId: user.id }] : [])],
-    },
-  })
+  const trip = await findReadableTrip(user?.id ?? null, tripId)
   if (!trip) notFound()
   return { user, trip }
 }
 
-/**
- * Nested resource — the one that is easy to get wrong. A stop id is not a
- * trip id, so the ownership filter walks the relation inside the query
- * rather than fetching the stop and comparing afterwards.
- */
 export async function requireStopOwner(stopId: string) {
   const user = await requireUser()
-  const stop = await prisma.stop.findFirst({
-    where: { id: stopId, trip: { userId: user.id } },
-    include: { trip: true },
-  })
+  const stop = await findOwnedStop(user.id, stopId)
   if (!stop) notFound()
   return { user, stop }
 }
 
-/** Same shape, one level deeper: a scheduled activity inside a stop. */
 export async function requireTripActivityOwner(tripActivityId: string) {
   const user = await requireUser()
-  const tripActivity = await prisma.tripActivity.findFirst({
-    where: { id: tripActivityId, stop: { trip: { userId: user.id } } },
-    include: { stop: true },
-  })
+  const tripActivity = await findOwnedTripActivity(user.id, tripActivityId)
   if (!tripActivity) notFound()
   return { user, tripActivity }
 }
