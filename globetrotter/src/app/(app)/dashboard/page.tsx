@@ -1,17 +1,19 @@
 import Link from "next/link"
+import { Compass, Copy, Eye, Globe } from "lucide-react"
 import { buttonVariants } from "@/components/ui/button"
 import { requireUser } from "@/lib/guard"
-import { labelDateUTC } from "@/lib/dates"
+import { dayCountUTC, labelDateUTC } from "@/lib/dates"
 import { formatMoney } from "@/lib/serialize"
-import { getRecommendedCities, getTripSummaries } from "@/lib/trip-queries"
+import { getPublicTrips, getRecommendedCities, getTripSummaries } from "@/lib/trip-queries"
 
 export const metadata = { title: "Dashboard · GlobeTrotter" }
 
 export default async function DashboardPage() {
   const user = await requireUser()
-  const [trips, cities] = await Promise.all([
+  const [trips, cities, publicTrips] = await Promise.all([
     getTripSummaries(user.id),
     getRecommendedCities(6),
+    getPublicTrips({ take: 3, excludeUserId: user.id }),
   ])
 
   const today = new Date()
@@ -91,9 +93,77 @@ export default async function DashboardPage() {
         )}
       </section>
 
+      {/* Community Itinerary Inspiration */}
+      {publicTrips.length > 0 && (
+        <section className="flex flex-col gap-4">
+          <div className="flex items-baseline justify-between">
+            <div className="flex items-center gap-2">
+              <Compass className="h-5 w-5 text-primary" />
+              <h2 className="text-lg font-semibold tracking-tight">Community Itineraries</h2>
+            </div>
+            <Link href="/inspiration" className="text-sm text-muted-foreground hover:underline">
+              Explore more
+            </Link>
+          </div>
+
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {publicTrips.map((trip) => (
+              <Link
+                key={trip.id}
+                href={`/t/${trip.shareSlug}`}
+                className="group flex flex-col overflow-hidden rounded-xl border bg-card shadow-sm transition-all hover:border-primary/40"
+              >
+                <div className="relative h-32 w-full overflow-hidden bg-muted">
+                  {trip.coverUrl ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={trip.coverUrl}
+                      alt={trip.name}
+                      className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                      loading="lazy"
+                    />
+                  ) : (
+                    <div className="flex h-full w-full items-center justify-center text-muted-foreground">
+                      <Globe className="h-8 w-8" />
+                    </div>
+                  )}
+                  <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/20 to-transparent" />
+                  <div className="absolute bottom-2 left-3 right-3 flex items-end justify-between text-xs">
+                    <span className="rounded-full bg-background/80 backdrop-blur px-2 py-0.5 text-[11px] font-medium text-foreground">
+                      by {trip.author}
+                    </span>
+                    <span className="rounded-full bg-primary/90 backdrop-blur px-2 py-0.5 text-[10px] font-bold text-white">
+                      {dayCountUTC(trip.startDate, trip.endDate)} days
+                    </span>
+                  </div>
+                </div>
+
+                <div className="flex flex-1 flex-col justify-between p-4 gap-2">
+                  <div>
+                    <h3 className="font-semibold leading-tight line-clamp-1 group-hover:text-primary transition-colors">
+                      {trip.name}
+                    </h3>
+                    <p className="text-xs text-muted-foreground line-clamp-1 mt-1">
+                      {trip.cities.length > 0 ? trip.cities.join(" → ") : "Flexible stops"}
+                    </p>
+                  </div>
+
+                  <div className="flex items-center justify-between text-xs pt-2 border-t text-muted-foreground">
+                    <span>{trip.activityCount} activities</span>
+                    <span className="font-semibold text-foreground">
+                      ~{formatMoney(trip.total, trip.currency)}
+                    </span>
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
+
       <section className="flex flex-col gap-4">
         <div className="flex items-baseline justify-between">
-          <h2 className="text-lg font-semibold tracking-tight">Popular right now</h2>
+          <h2 className="text-lg font-semibold tracking-tight">Popular destinations</h2>
           <Link href="/cities" className="text-sm text-muted-foreground hover:underline">
             Browse all cities
           </Link>

@@ -50,6 +50,8 @@ export default async function TripLayout({
               tripId={trip.id}
               isPublic={trip.isPublic}
               shareSlug={trip.shareSlug}
+              tripName={trip.name}
+              tripDescription={trip.description}
             />
           </div>
         </div>

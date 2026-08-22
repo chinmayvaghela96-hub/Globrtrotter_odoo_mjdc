@@ -131,7 +131,7 @@ function Home() {
 
       navigate("/dashboard");
 
-    }, 1100);
+    }, 2200);
 
   };
 

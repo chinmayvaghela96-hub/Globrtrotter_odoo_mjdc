@@ -210,6 +210,20 @@ Three decisions worth defending:
 - **No total is stored**, so no total can drift. `computeBudget` derives it
   from one query, every time.
 
+### Public Sharing and Copying (Provenance & Invariants)
+
+- **Read-only public URLs (`/t/[slug]`)**:
+  - Anyone with a share slug can view a rich, responsive, read-only itinerary with OpenGraph / social cards, destination route cards, day-by-day activity timelines, arrival badges, and category pills.
+  - Social sharing buttons support native Web Share API (`navigator.share`), 1-click clipboard copy, WhatsApp, X/Twitter, LinkedIn, and print-ready PDF output.
+- **Privacy & Revocation**:
+  - Making a trip private immediately revokes its `shareSlug`. Any subsequent request to `/t/[old-slug]` immediately yields a `404` (`notFound()`), disclosing no information.
+- **Atomic Graph Clone (`copyTrip`)**:
+  - An authenticated user can clone a public itinerary with a single click.
+  - The clone duplicates the entire trip graph (`Trip` -> `Stop`s -> `TripActivity` entries + `Expense`s) within a single `$transaction`.
+  - The cloned trip is assigned a fresh ID, new ownership (`userId = user.id`), `isPublic: false`, `shareSlug: null`, and records `copiedFromId: src.id` for provenance.
+- **Community Inspiration (`/inspiration`)**:
+  - A dedicated inspiration discovery tab lets users search and browse public community itineraries by city, country, or keyword, with direct preview and 1-click cloning.
+
 ---
 
 ## Layout
@@ -233,12 +247,14 @@ src/
     serialize.ts         the Server -> Client boundary
     trip-queries.ts      query boundary, returns plain data
   actions/               server actions, one file per resource
+  components/share/      social sharing & share dialog components
   app/(auth)/            login, signup, forgot password
-  app/(app)/             everything behind a session
-  app/t/[slug]/          public share page, no auth
+  app/(app)/             everything behind a session (dashboard, trips, inspiration, cities, activities)
+  app/t/[slug]/          public share page with OpenGraph & print styles, no auth required
 tests/
 ```
 
 `src/middleware.ts` is a first line of defence only — it redirects signed-out
 visitors. It is **not** where authorization happens: a route match is not a
 permission, since `/trips/<someone-elses-id>` matches it perfectly.
+

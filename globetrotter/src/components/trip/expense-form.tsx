@@ -70,12 +70,14 @@ export function ExpenseFormDialog({
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button size="sm" variant="outline" className="gap-1.5">
-          <Plus className="h-4 w-4" />
-          Log extra expense
-        </Button>
-      </DialogTrigger>
+      <DialogTrigger
+        render={
+          <Button size="sm" variant="outline" className="gap-1.5">
+            <Plus className="h-4 w-4" />
+            Log extra expense
+          </Button>
+        }
+      />
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Log an expense</DialogTitle>
@@ -100,7 +102,9 @@ export function ExpenseFormDialog({
             <Label htmlFor="category">Category</Label>
             <Select
               value={selectedCategory}
-              onValueChange={setSelectedCategory}
+              onValueChange={(val) => {
+                if (val) setSelectedCategory(val)
+              }}
             >
               <SelectTrigger id="category">
                 <SelectValue placeholder="Select category" />
