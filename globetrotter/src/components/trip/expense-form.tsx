@@ -22,6 +22,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { CURRENCY_CODES } from "@/lib/money"
 import type { ActionResult } from "@/lib/result"
 
 const CATEGORIES = [
@@ -135,20 +136,46 @@ export function ExpenseFormDialog({
 
           <div className="grid grid-cols-2 gap-4">
             <div className="flex flex-col gap-2">
-              <Label htmlFor="amount">Amount ({currency})</Label>
-              <Input
-                id="amount"
-                name="amount"
-                type="number"
-                step="0.01"
-                min="0"
-                placeholder="0.00"
-                defaultValue={state?.values.amount ?? ""}
-                aria-invalid={Boolean(error("amount"))}
-              />
+              <Label htmlFor="amount">Amount paid</Label>
+              <div className="flex gap-2">
+                <Input
+                  id="amount"
+                  name="amount"
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  placeholder="0.00"
+                  defaultValue={state?.values.amount ?? ""}
+                  aria-invalid={Boolean(error("amount"))}
+                  className="flex-1"
+                />
+                {/*
+                  Pay in whatever the receipt says. The action converts once
+                  to the trip currency and stores the rate alongside, so the
+                  budget total stays in one currency.
+                */}
+                <select
+                  name="currency"
+                  aria-label="Currency paid in"
+                  defaultValue={state?.values.currency ?? currency}
+                  className="h-9 w-24 rounded-lg border border-input bg-transparent px-2 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 dark:bg-input/30"
+                >
+                  {CURRENCY_CODES.map((code) => (
+                    <option key={code} value={code}>
+                      {code}
+                    </option>
+                  ))}
+                </select>
+              </div>
               {error("amount") && (
                 <span className="text-xs text-destructive">{error("amount")}</span>
               )}
+              {error("currency") && (
+                <span className="text-xs text-destructive">{error("currency")}</span>
+              )}
+              <span className="text-xs text-muted-foreground">
+                Converted to {currency} at today&apos;s rate and stored with it.
+              </span>
             </div>
 
             <div className="flex flex-col gap-2">

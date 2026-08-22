@@ -234,6 +234,10 @@ export async function getTripExpenses(tripId: string) {
       label: true,
       amount: true,
       date: true,
+      originalAmount: true,
+      originalCurrency: true,
+      fxRate: true,
+      fxRateAt: true,
     },
   })
 
@@ -241,8 +245,14 @@ export async function getTripExpenses(tripId: string) {
     id: exp.id,
     category: exp.category,
     label: exp.label,
+    // Always the trip currency — see actions/expense.ts.
     amount: money(exp.amount),
     date: formatDateUTC(exp.date),
+    // Null on anything entered in the trip's own currency.
+    originalAmount: moneyOrNull(exp.originalAmount),
+    originalCurrency: exp.originalCurrency,
+    fxRate: moneyOrNull(exp.fxRate),
+    fxRateAt: exp.fxRateAt ? exp.fxRateAt.toISOString() : null,
   }))
 }
 

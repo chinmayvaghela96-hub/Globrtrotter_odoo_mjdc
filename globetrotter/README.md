@@ -51,7 +51,7 @@ browser.
 | `npm run db:seed` | Seed the catalogue, users, and demo trip |
 | `npm run db:reset` | Drop, re-migrate, re-seed |
 | `npm run db:studio` | Prisma Studio |
-| `npm test` | Vitest — 88 tests |
+| `npm test` | Vitest — 131 tests |
 | `npm run smoke` | HTTP smoke test against a running dev server |
 
 `npm run smoke` mints a real session cookie with the app's own secret and
@@ -221,6 +221,61 @@ the same 45 cities and 360 activities. The demo trip uses a fixed id and a
 fixed `shareSlug`, so the public URL survives a reset.
 
 ---
+
+## Money and currency
+
+Every cost is stored twice over. `amount` (or `cost`) **always** holds the
+value in the trip's currency — that is what every budget query sums, and its
+meaning never changes. Alongside it sit `originalAmount`, `originalCurrency`,
+`fxRate` and `fxRateAt`, recording what the traveller actually paid and the
+rate used.
+
+The rate is **stored, not looked up at render time**, so a budget someone saw
+last week does not quietly change because the market moved. All the new
+columns are nullable, so every row that existed before — and every query that
+reads them — is unaffected.
+
+Conversion and formatting live in exactly one place,
+[`src/lib/money.ts`](src/lib/money.ts). `serialize.ts` re-exports `formatMoney`
+so the twelve existing call sites keep working against a single implementation.
+
+`displayMoney()` leads with what was paid and follows with the trip-currency
+figure — `€50` then `₹4,500` — because the first number is the one on the
+receipt. With no conversion there is one number and no bracket to explain.
+
+### `GET /api/rates?from=EUR&to=INR`
+
+Signed-in only. **Always answers 200 with a usable rate.** A missing key or an
+unreachable vendor is reported as `source: "fallback"` with a `reason` the UI
+shows verbatim — not an error the form has to handle.
+
+## Travel data providers
+
+Four adapters, all optional, all following the same contract as
+`map-provider`: they resolve rather than throw, and say whether the answer came
+from the vendor or the local model.
+
+| Adapter | Env | Fallback when unset |
+| --- | --- | --- |
+| Currency | `CURRENCY_API_URL` / `CURRENCY_API_KEY` | Committed reference table in `money.ts` |
+| Transport | `TRANSPORT_API_URL` / `TRANSPORT_API_KEY` | Modelled from real great-circle distance |
+| Accommodation | `STAY_API_URL` / `STAY_API_KEY` | Modelled from the city cost index |
+| Maps | `MAP_PROVIDER` / `MAP_API_KEY` | Coordinates plotted as SVG |
+
+The fallbacks are **not stubs**. Transport cost is derived from the actual
+distance between two seeded cities, so it still moves correctly when you swap
+Bangkok for Reykjavik; stay scales off the city's cost index. A live provider
+replaces the model with quotes — it does not turn nonsense into sense.
+
+The currency adapter takes a **URL template** rather than naming a vendor,
+because every common rate API returns the same essential shape
+(`{ "rates": { "INR": 91.2 } }`). One parser covers exchangerate.host,
+open.er-api.com, Fixer, Frankfurter and OpenExchangeRates; swapping vendor is
+an environment change. `{base}`, `{from}`, `{to}`, `{city}`, `{nights}` and
+`{key}` are substituted.
+
+Live rates are cached in-process for an hour, so a page does not spend a vendor
+call per amount rendered.
 
 ## Cities, wishlist and maps
 

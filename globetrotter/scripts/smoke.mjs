@@ -119,6 +119,38 @@ for (const check of checks) {
   )
 }
 
+// Rates must always answer with a usable number, configured or not, and must
+// never serve an anonymous request.
+{
+  const anon = await fetch(`${base}/api/rates?from=EUR&to=INR`, { redirect: "manual" })
+  const anonOk = anon.status === 401 || anon.status === 307
+  if (!anonOk) failures++
+  console.log(
+    `${anonOk ? "PASS" : "FAIL"}  ${anon.status} /api/rates (anonymous, expect 401/307)`,
+  )
+
+  const rate = await fetch(`${base}/api/rates?from=EUR&to=INR`, {
+    headers: { cookie },
+    redirect: "manual",
+  })
+  const body = rate.ok ? await rate.json() : {}
+  const rateOk = rate.status === 200 && typeof body.rate === "number" && body.rate > 0
+  if (!rateOk) failures++
+  console.log(
+    `${rateOk ? "PASS" : "FAIL"}  ${rate.status} /api/rates EUR->INR = ${body.rate} (${body.source})`,
+  )
+
+  const bogus = await fetch(`${base}/api/rates?from=XYZ&to=INR`, {
+    headers: { cookie },
+    redirect: "manual",
+  })
+  const bogusOk = bogus.status === 400
+  if (!bogusOk) failures++
+  console.log(
+    `${bogusOk ? "PASS" : "FAIL"}  ${bogus.status} /api/rates (unknown currency, expect 400)`,
+  )
+}
+
 // Authorization, over HTTP: a real id belonging to nobody in this session.
 const stranger = await prisma.user.findFirstOrThrow({
   where: { email: "admin@globetrotter.app" },

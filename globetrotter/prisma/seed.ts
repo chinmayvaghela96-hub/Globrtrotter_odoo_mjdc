@@ -1,4 +1,4 @@
-import { PrismaClient, ActivityCategory, Role } from "@prisma/client"
+import { PrismaClient, ActivityCategory, ExpenseCategory, Role } from "@prisma/client"
 import bcrypt from "bcryptjs"
 import cities from "./data/cities.json"
 
@@ -297,6 +297,52 @@ async function seedDemoTrip(userId: string) {
 
       add(pick.date, activity.cost.toNumber())
     }
+  }
+
+  // A couple of real expenses, one of them paid in baht, so the dual-currency
+  // display has something to show without anyone having to log an expense by
+  // hand before a demo. `amount` is the trip-currency figure the budget sums;
+  // the original and rate sit alongside it.
+  const THB_TO_INR = 2.56
+  const rateTakenAt = d("2026-09-15")
+
+  const expenses = [
+    {
+      category: ExpenseCategory.MEALS,
+      label: "Street food, Yaowarat",
+      originalAmount: 850,
+      originalCurrency: "THB",
+      date: "2026-09-15",
+    },
+    {
+      category: ExpenseCategory.OTHER,
+      label: "SIM card and transit pass",
+      originalAmount: 1200,
+      originalCurrency: null,
+      date: "2026-09-14",
+    },
+  ]
+
+  for (const expense of expenses) {
+    const converted = expense.originalCurrency
+      ? Math.round(expense.originalAmount * THB_TO_INR)
+      : expense.originalAmount
+
+    await prisma.expense.create({
+      data: {
+        tripId: trip.id,
+        category: expense.category,
+        label: expense.label,
+        amount: converted,
+        date: d(expense.date),
+        originalAmount: expense.originalCurrency ? expense.originalAmount : null,
+        originalCurrency: expense.originalCurrency,
+        fxRate: expense.originalCurrency ? THB_TO_INR : null,
+        fxRateAt: expense.originalCurrency ? rateTakenAt : null,
+      },
+    })
+
+    add(expense.date, converted)
   }
 
   // Set the cap so that exactly one day breaches it. Computed rather than
