@@ -11,6 +11,8 @@ import {
 import { formatDistance } from "@/lib/geo"
 import { requireUser } from "@/lib/guard"
 import { getMapProvider } from "@/lib/map-provider"
+import { isSatelliteConfigured } from "@/lib/providers/satellite"
+import { SatellitePanel } from "@/components/map/satellite-panel"
 
 export async function generateMetadata({
   params,
@@ -115,6 +117,16 @@ export default async function CityDetailPage({
           attribution={provider?.attribution}
         />
       </section>
+
+      {/* Answers a different question from the map above: not where the city
+          is, but what it actually looks like. Renders nothing when Copernicus
+          is unconfigured. */}
+      <SatellitePanel
+        cityName={city.name}
+        latitude={city.latitude}
+        longitude={city.longitude}
+        configured={isSatelliteConfigured()}
+      />
 
       <section className="flex flex-col gap-4">
         <div className="flex items-baseline justify-between gap-4">

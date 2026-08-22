@@ -163,6 +163,44 @@ for (const check of checks) {
   )
 }
 
+// Satellite imagery: optional, so 501 when unconfigured is correct, and a
+// vendor that cannot produce a clear scene warns rather than fails.
+{
+  const anon = await fetch(`${base}/api/satellite?lat=13.75&lon=100.5`, {
+    redirect: "manual",
+  })
+  const anonOk = anon.status === 401 || anon.status === 307
+  if (!anonOk) failures++
+  console.log(
+    `${anonOk ? "PASS" : "FAIL"}  ${anon.status} /api/satellite (anonymous, expect 401/307)`,
+  )
+
+  const configured = Boolean(
+    process.env.COPERNICUS_CLIENT_ID?.trim() &&
+      process.env.COPERNICUS_CLIENT_SECRET?.trim(),
+  )
+  const shot = await fetch(`${base}/api/satellite?lat=13.75&lon=100.5&size=256`, {
+    headers: { cookie },
+    redirect: "manual",
+  })
+
+  if (!configured) {
+    const ok = shot.status === 501
+    if (!ok) failures++
+    console.log(
+      `${ok ? "PASS" : "FAIL"}  ${shot.status} /api/satellite (unconfigured, expect 501)`,
+    )
+  } else if (shot.status === 200) {
+    console.log(`PASS  200 /api/satellite (live Sentinel-2 render)`)
+  } else {
+    // Credentials set but no scene: cloud cover is a real condition, and the
+    // panel explains itself rather than breaking.
+    console.log(
+      `WARN  ${shot.status} /api/satellite — credentials set but no scene returned`,
+    )
+  }
+}
+
 // Authorization, over HTTP: a real id belonging to nobody in this session.
 const stranger = await prisma.user.findFirstOrThrow({
   where: { email: "admin@globetrotter.app" },
