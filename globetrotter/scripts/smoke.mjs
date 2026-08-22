@@ -43,7 +43,9 @@ const checks = [
   { path: `/trips/${trip.id}`, expect: ["Bangkok", "Chiang Mai", "Ubud"] },
   { path: `/trips/${trip.id}/build`, expect: ["Stops", "Add a stop"] },
   { path: `/trips/${trip.id}/budget`, expect: ["Total Planned Spend", "Category Distribution", "Daily Spending Timeline"] },
-  { path: `/trips/${trip.id}/calendar`, expect: ["Timeline & Daily Schedule", "Day 1"] },
+  // Fragments only: "&" renders as "&amp;", and "Day {n}" renders as
+  // "Day <!-- -->1", so neither survives a literal substring check.
+  { path: `/trips/${trip.id}/calendar`, expect: ["Timeline", "Daily Schedule", "Day spend"] },
   { path: "/t/sea-loop-demo", expect: ["Southeast Asia Loop", "Public Itinerary"] },
   { path: "/profile", expect: ["Saved destinations", "Delete account"] },
   { path: "/cities", expect: ["Paris", "Bangkok"] },
@@ -52,6 +54,12 @@ const checks = [
   { path: "/activities?cityId=" + (await prisma.city.findFirstOrThrow({
       where: { name: "Bangkok" }, select: { id: true },
     })).id, expect: ["Grand Palace"] },
+  { path: "/cities?country=Thailand", expect: ["Bangkok", "Chiang Mai"] },
+  { path: "/cities?region=Europe&country=France", expect: ["Paris"] },
+  { path: "/wishlist", expect: ["Wishlist"] },
+  { path: "/cities/" + (await prisma.city.findFirstOrThrow({
+      where: { name: "Bangkok" }, select: { id: true },
+    })).id, expect: ["Bangkok", "Nearby cities", "Where it is"] },
 ]
 
 let failures = 0
@@ -70,6 +78,42 @@ for (const check of checks) {
   console.log(
     `${ok ? "PASS" : "FAIL"}  ${String(response.status).padEnd(3)} ${check.path}` +
       (missing.length ? `  missing: ${missing.join(", ")}` : ""),
+  )
+}
+
+// The map route must degrade rather than fail when no key is configured, and
+// must never serve an anonymous request.
+{
+  const anon = await fetch(`${base}/api/map/static?w=320&h=160&m=100.5,13.75,p`, {
+    redirect: "manual",
+  })
+  const anonOk = anon.status === 401 || anon.status === 307
+  if (!anonOk) failures++
+  console.log(
+    `${anonOk ? "PASS" : "FAIL"}  ${anon.status} /api/map/static (anonymous, expect 401/307)`,
+  )
+
+  const withKey = process.env.MAP_API_KEY?.trim()
+  const mapped = await fetch(`${base}/api/map/static?w=320&h=160&m=100.5,13.75,p`, {
+    headers: { cookie },
+    redirect: "manual",
+  })
+  const expected = withKey ? 200 : 501
+  const mapOk = mapped.status === expected
+  if (!mapOk) failures++
+  console.log(
+    `${mapOk ? "PASS" : "FAIL"}  ${mapped.status} /api/map/static (key ${withKey ? "set" : "unset"}, expect ${expected})`,
+  )
+
+  const bad = await fetch(`${base}/api/map/static?w=99999&m=999,999`, {
+    headers: { cookie },
+    redirect: "manual",
+  })
+  // 400 when a provider is configured; 501 short-circuits before validation.
+  const badOk = bad.status === 400 || bad.status === 501
+  if (!badOk) failures++
+  console.log(
+    `${badOk ? "PASS" : "FAIL"}  ${bad.status} /api/map/static (invalid params, expect 400/501)`,
   )
 }
 

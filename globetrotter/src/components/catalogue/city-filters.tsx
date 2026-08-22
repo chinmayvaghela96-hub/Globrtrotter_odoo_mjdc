@@ -29,21 +29,26 @@ const FIELD =
 export type CityFilterValues = {
   q: string
   region: string
+  country: string
   maxCost: string
   sort: CitySort
 }
 
 export function CityFilters({
   regions,
+  countries,
   values,
 }: {
   regions: string[]
+  countries: string[]
   values: CityFilterValues
 }) {
   const router = useRouter()
   const [pending, startTransition] = useTransition()
 
-  const hasFilters = Boolean(values.q || values.region || values.maxCost)
+  const hasFilters = Boolean(
+    values.q || values.region || values.country || values.maxCost,
+  )
 
   /**
    * The filters are URL state, not component state. That makes a result set
@@ -62,9 +67,13 @@ export function CityFilters({
     const region = read("region")
     const maxCost = read("maxCost")
     const sort = read("sort")
+    // Changing region renarrows the country list, so a country from the old
+    // region would return nothing. Drop it rather than show an empty result.
+    const country = region !== values.region ? "" : read("country")
 
     if (q) params.set("q", q)
     if (region) params.set("region", region)
+    if (country) params.set("country", country)
     if (maxCost) params.set("maxCost", maxCost)
     if (sort && sort !== "popularity") params.set("sort", sort) // the default stays out of the URL
 
@@ -83,7 +92,7 @@ export function CityFilters({
       onSubmit={submit}
       className="flex flex-col gap-4 rounded-xl border bg-card p-4"
     >
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-6">
         <div className="flex flex-col gap-1.5 sm:col-span-2">
           <Label htmlFor="city-q">Search</Label>
           <Input
@@ -109,6 +118,26 @@ export function CityFilters({
             {regions.map((region) => (
               <option key={region} value={region}>
                 {region}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="flex flex-col gap-1.5">
+          <Label htmlFor="city-country">Country</Label>
+          <select
+            id="city-country"
+            name="country"
+            defaultValue={values.country}
+            onChange={applyNow}
+            className={FIELD}
+          >
+            <option value="">
+              {values.region ? `All of ${values.region}` : "All countries"}
+            </option>
+            {countries.map((country) => (
+              <option key={country} value={country}>
+                {country}
               </option>
             ))}
           </select>

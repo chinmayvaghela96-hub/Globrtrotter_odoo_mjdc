@@ -1,5 +1,6 @@
 import type { ActivityCategory, Prisma } from "@prisma/client"
 import { prisma } from "@/lib/db"
+import { nearest } from "@/lib/geo"
 import { money } from "@/lib/serialize"
 
 /**
@@ -17,6 +18,7 @@ export type CitySort = (typeof CITY_SORTS)[number]
 export type CityFilters = {
   q?: string
   region?: string
+  country?: string
   maxCost?: number
   sort?: CitySort
 }
@@ -38,6 +40,7 @@ export async function searchCities(filters: CityFilters = {}) {
     ]
   }
   if (filters.region) where.region = filters.region
+  if (filters.country) where.country = filters.country
   if (filters.maxCost !== undefined) where.costIndex = { lte: filters.maxCost }
 
   return prisma.city.findMany({
@@ -66,6 +69,72 @@ export async function getRegions() {
   })
   return rows.map((row) => row.region)
 }
+
+/**
+ * Countries for the filter, optionally narrowed to one region so the two
+ * selects stay consistent — picking Europe should not leave Thailand in the
+ * country list.
+ */
+export async function getCountries(region?: string) {
+  const rows = await prisma.city.findMany({
+    where: region ? { region } : undefined,
+    distinct: ["country"],
+    orderBy: { country: "asc" },
+    select: { country: true },
+  })
+  return rows.map((row) => row.country)
+}
+
+/** One city, with everything the detail page and its map need. */
+export async function getCityById(cityId: string) {
+  return prisma.city.findUnique({
+    where: { id: cityId },
+    select: {
+      id: true,
+      name: true,
+      country: true,
+      region: true,
+      latitude: true,
+      longitude: true,
+      costIndex: true,
+      popularity: true,
+      imageUrl: true,
+      _count: { select: { activities: true } },
+    },
+  })
+}
+
+export type CityDetail = NonNullable<Awaited<ReturnType<typeof getCityById>>>
+
+/**
+ * Cities closest to the given one, nearest first.
+ *
+ * The whole catalogue is loaded and measured in memory. That is the right
+ * trade at tens of cities; past a few thousand you would pre-filter with a
+ * bounding box in SQL first, and `nearest` would take it from there unchanged.
+ */
+export async function getNearbyCities(
+  city: { id: string; latitude: number; longitude: number },
+  options: { limit?: number; maxKm?: number } = {},
+) {
+  const candidates = await prisma.city.findMany({
+    where: { id: { not: city.id } },
+    select: {
+      id: true,
+      name: true,
+      country: true,
+      region: true,
+      latitude: true,
+      longitude: true,
+      costIndex: true,
+      imageUrl: true,
+    },
+  })
+
+  return nearest(city, candidates, { limit: options.limit ?? 6, maxKm: options.maxKm })
+}
+
+export type NearbyCity = Awaited<ReturnType<typeof getNearbyCities>>[number]
 
 export type ActivityFilters = {
   q?: string

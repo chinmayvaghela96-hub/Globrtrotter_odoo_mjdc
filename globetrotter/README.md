@@ -25,6 +25,24 @@ For a hosted database (Neon, Supabase), replace `DATABASE_URL` and `DIRECT_URL`
 in `.env` and skip `docker compose`. Nothing else changes.
 `DIRECT_URL` must point at the **non-pooled** host or `prisma migrate` will hang.
 
+Copy `.env.example` to `.env` to start. Every variable is documented there;
+`.env` itself is gitignored and `.env.example` holds no secrets.
+
+### Maps are optional
+
+The city map works with **no API key**. Leave `MAP_API_KEY` unset and
+`/cities/[id]` plots the stored coordinates itself — real positions, correct
+distances, no network call. Set a key to get real cartography:
+
+```bash
+MAP_PROVIDER="maptiler"   # or "mapbox"
+MAP_API_KEY="..."
+```
+
+The variable is deliberately **not** `NEXT_PUBLIC_`. Pages request maps through
+`/api/map/static`, which injects the key server-side, so it never reaches the
+browser.
+
 | Script | What it does |
 | --- | --- |
 | `npm run dev` | Next dev server |
@@ -33,7 +51,7 @@ in `.env` and skip `docker compose`. Nothing else changes.
 | `npm run db:seed` | Seed the catalogue, users, and demo trip |
 | `npm run db:reset` | Drop, re-migrate, re-seed |
 | `npm run db:studio` | Prisma Studio |
-| `npm test` | Vitest — 54 tests |
+| `npm test` | Vitest — 88 tests |
 | `npm run smoke` | HTTP smoke test against a running dev server |
 
 `npm run smoke` mints a real session cookie with the app's own secret and
@@ -172,6 +190,22 @@ atomic, and a transaction there would be noise.
 | 4 | Missing **or not yours** | `not-found.tsx` — deliberately identical |
 | 5 | Root crash | `global-error.tsx` |
 
+### Sign-in returns you to where you were
+
+The middleware records the page an anonymous visitor was turned away from as
+`?next=/trips/abc`, and the form sends it back so sign-in lands there instead
+of always on the dashboard.
+
+That value comes from the URL, so anyone can set it — a link to our own login
+page carrying `?next=https://evil.example` would otherwise make us a
+convincing hop to somebody else's site. Every target goes through
+[`safeRedirect`](src/lib/safe-redirect.ts), which accepts only a
+site-relative path: absolute URLs, protocol-relative `//host`, non-path
+schemes, anything absolute after decoding, and embedded control characters are
+all rejected to the dashboard. The pages filter it a second time so a hostile
+value is never echoed into the page source either.
+`tests/safe-redirect.test.ts` covers each case.
+
 ### Dates are calendar days, never instants
 
 `@db.Date` stores no time and no zone. Building a `Date` from local parts at
@@ -187,6 +221,50 @@ the same 45 cities and 360 activities. The demo trip uses a fixed id and a
 fixed `shareSlug`, so the public URL survives a reset.
 
 ---
+
+## Cities, wishlist and maps
+
+| Route | What it does |
+| --- | --- |
+| `/cities` | Full catalogue. Search by name or country; filter by region, country and cost index; four sort orders |
+| `/cities/[id]` | One city, its map, and the six nearest cities with distance and compass bearing |
+| `/wishlist` | Saved cities, newest first |
+| `POST` actions | `saveCity`, `unsaveCity`, `toggleSavedCity` in [`src/actions/saved.ts`](src/actions/saved.ts) |
+| `GET /api/map/static` | Static map proxy — see below |
+
+Filters live in the **URL**, so a result set is linkable, reloadable and
+correct under the back button. Choosing a region narrows the country list, and
+switching region clears a now-impossible country rather than showing an empty
+result.
+
+**Wishlist** persists in the `SavedCity` table, whose primary key is the
+composite `[userId, cityId]`. A user can only ever address their own rows, and
+the same city cannot be saved twice — `saveCity` upserts and `unsaveCity` uses
+`deleteMany`, so both are idempotent.
+
+**Nearby cities** need no map vendor at all: every seeded city already carries
+a latitude and longitude, so proximity is haversine arithmetic over data we
+hold ([`src/lib/geo.ts`](src/lib/geo.ts), 20 tests). Only *drawing* a map needs
+a provider.
+
+### `GET /api/map/static`
+
+Signed-in only. Query: `w`, `h` (80–1280), and one or more `m=lon,lat[,p]`
+markers (max 25, `p` marks the primary pin). Every parameter is validated
+before it reaches the vendor — an unchecked passthrough would let anyone spend
+our key on arbitrary requests.
+
+| Status | Meaning |
+| --- | --- |
+| `200` | Image streamed from the provider |
+| `401` | Not signed in |
+| `400` | Bad parameters |
+| `501` | No provider configured — the caller renders the SVG fallback |
+| `502` | Provider unreachable — same fallback |
+
+Adding a vendor means one entry in `PROVIDERS` in
+[`src/lib/map-provider.ts`](src/lib/map-provider.ts). Nothing else in the app
+imports a map SDK or URL template.
 
 ## Schema
 

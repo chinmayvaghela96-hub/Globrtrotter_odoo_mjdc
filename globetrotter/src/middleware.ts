@@ -11,7 +11,15 @@ import { SESSION_COOKIE, verifySession } from "@/lib/session"
  * permission: `/trips/<someone-elses-id>` matches this middleware perfectly.
  */
 
-const PROTECTED = ["/dashboard", "/trips", "/cities", "/activities", "/profile", "/admin"]
+const PROTECTED = [
+  "/dashboard",
+  "/trips",
+  "/cities",
+  "/activities",
+  "/wishlist",
+  "/profile",
+  "/admin",
+]
 const AUTH_PAGES = ["/login", "/signup"]
 
 export async function middleware(request: NextRequest) {

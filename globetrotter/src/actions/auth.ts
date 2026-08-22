@@ -6,7 +6,8 @@ import { z } from "zod"
 import { guestAction } from "@/lib/action"
 import { prisma } from "@/lib/db"
 import { hashPassword, verifyPassword } from "@/lib/password"
-import { fail, ok } from "@/lib/result"
+import { fail } from "@/lib/result"
+import { safeRedirect } from "@/lib/safe-redirect"
 import { SESSION_COOKIE, SESSION_MAX_AGE, signSession } from "@/lib/session"
 
 const email = z
@@ -15,15 +16,27 @@ const email = z
   .toLowerCase()
   .pipe(z.email("Enter a valid email address."))
 
+/**
+ * Where to land after signing in. The middleware puts the page the visitor
+ * was trying to reach here; `safeRedirect` decides whether to honour it,
+ * because the value comes from the URL and anyone can set it.
+ */
+const next = z.string().optional()
+
 const SignUpInput = z.object({
   name: z.string().trim().min(2, "Tell us your name."),
   email,
-  password: z.string().min(8, "Use at least 8 characters."),
+  password: z
+    .string()
+    .min(8, "Use at least 8 characters.")
+    .max(200, "That is longer than we can store."),
+  next,
 })
 
 const SignInInput = z.object({
   email,
   password: z.string().min(1, "Enter your password."),
+  next,
 })
 
 async function startSession(userId: string) {
@@ -38,7 +51,7 @@ async function startSession(userId: string) {
   })
 }
 
-export const signUp = guestAction(SignUpInput, async ({ name, email, password }) => {
+export const signUp = guestAction(SignUpInput, async ({ name, email, password, next }) => {
   const existing = await prisma.user.findUnique({ where: { email } })
   if (existing) {
     return fail("Check the highlighted fields.", {
@@ -51,10 +64,10 @@ export const signUp = guestAction(SignUpInput, async ({ name, email, password })
   })
 
   await startSession(user.id)
-  redirect("/dashboard") // throws NEXT_REDIRECT; guestAction rethrows it
+  redirect(safeRedirect(next)) // throws NEXT_REDIRECT; guestAction rethrows it
 })
 
-export const signIn = guestAction(SignInInput, async ({ email, password }) => {
+export const signIn = guestAction(SignInInput, async ({ email, password, next }) => {
   const user = await prisma.user.findUnique({ where: { email } })
 
   // One message for "no such account" and "wrong password" alike. Telling
@@ -71,7 +84,7 @@ export const signIn = guestAction(SignInInput, async ({ email, password }) => {
   if (!(await verifyPassword(password, user.passwordHash))) return rejected
 
   await startSession(user.id)
-  redirect("/dashboard")
+  redirect(safeRedirect(next))
 })
 
 export async function signOut() {

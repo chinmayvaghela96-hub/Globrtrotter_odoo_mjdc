@@ -16,6 +16,13 @@ import { prisma } from "@/lib/db"
 
 const CityIdInput = z.object({ cityId: z.string().min(1) })
 
+/** Every surface that lists saved cities. */
+function revalidateSaved() {
+  revalidatePath("/cities")
+  revalidatePath("/wishlist")
+  revalidatePath("/profile")
+}
+
 export const saveCity = action(CityIdInput, async (input, user) => {
   await prisma.savedCity.upsert({
     where: { userId_cityId: { userId: user.id, cityId: input.cityId } },
@@ -23,8 +30,7 @@ export const saveCity = action(CityIdInput, async (input, user) => {
     create: { userId: user.id, cityId: input.cityId },
   })
 
-  revalidatePath("/cities")
-  revalidatePath("/profile")
+  revalidateSaved()
   return { saved: true }
 })
 
@@ -34,8 +40,7 @@ export const unsaveCity = action(CityIdInput, async (input, user) => {
     where: { userId: user.id, cityId: input.cityId },
   })
 
-  revalidatePath("/cities")
-  revalidatePath("/profile")
+  revalidateSaved()
   return { saved: false }
 })
 
@@ -45,15 +50,13 @@ export const toggleSavedCity = action(CityIdInput, async (input, user) => {
 
   if (existing) {
     await prisma.savedCity.delete({ where: key })
-    revalidatePath("/cities")
-    revalidatePath("/profile")
+    revalidateSaved()
     return { saved: false }
   }
 
   await prisma.savedCity.create({
     data: { userId: user.id, cityId: input.cityId },
   })
-  revalidatePath("/cities")
-  revalidatePath("/profile")
+  revalidateSaved()
   return { saved: true }
 })

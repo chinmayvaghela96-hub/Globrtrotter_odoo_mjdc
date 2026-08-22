@@ -6,6 +6,7 @@ import {
   CITY_SORTS,
   type CityResult,
   type CitySort,
+  getCountries,
   getRegions,
   getSavedCityIds,
   searchCities,
@@ -51,21 +52,26 @@ export default async function CitiesPage({
 
   const q = first(sp.q)
   const region = first(sp.region)
+  const country = first(sp.country)
   const maxCost = parseMaxCost(first(sp.maxCost))
   const sort = parseSort(first(sp.sort))
 
-  const [cities, regions, savedIds] = await Promise.all([
-    searchCities({ q, region, maxCost, sort }),
+  const [cities, regions, countries, savedIds] = await Promise.all([
+    searchCities({ q, region, country, maxCost, sort }),
     getRegions(),
+    // Narrowed to the chosen region so the two selects cannot disagree.
+    getCountries(region),
     getSavedCityIds(user.id),
   ])
 
-  const filtered = Boolean(q || region || maxCost)
+  const filtered = Boolean(q || region || country || maxCost)
 
   return (
     <div className="flex flex-col gap-8">
       <div className="flex flex-col gap-1">
-        <h1 className="text-2xl font-semibold tracking-tight">Cities</h1>
+        <h1 className="font-heading text-3xl font-semibold tracking-tight">
+          Cities
+        </h1>
         <p className="text-sm text-muted-foreground">
           {resultSummary(cities.length, filtered)}
         </p>
@@ -75,11 +81,13 @@ export default async function CitiesPage({
         // Keyed on the query so the form remounts when the URL changes: the
         // fields then match the params even when the move came from the back
         // button rather than from the form itself.
-        key={`${q ?? ""}|${region ?? ""}|${maxCost ?? ""}|${sort}`}
+        key={`${q ?? ""}|${region ?? ""}|${country ?? ""}|${maxCost ?? ""}|${sort}`}
         regions={regions}
+        countries={countries}
         values={{
           q: q ?? "",
           region: region ?? "",
+          country: country ?? "",
           maxCost: maxCost === undefined ? "" : String(maxCost),
           sort,
         }}
@@ -112,7 +120,14 @@ function CityCard({ city, saved }: { city: CityResult; saved: boolean }) {
       <div className="flex flex-1 flex-col gap-3 p-4">
         <div className="flex items-start justify-between gap-3">
           <div className="flex flex-col">
-            <h2 className="font-medium leading-tight">{city.name}</h2>
+            <h2 className="font-medium leading-tight">
+              <Link
+                href={`/cities/${city.id}`}
+                className="underline-offset-4 hover:underline"
+              >
+                {city.name}
+              </Link>
+            </h2>
             <span className="text-sm text-muted-foreground">{city.country}</span>
           </div>
           <span className="shrink-0 rounded-full border px-2 py-0.5 text-[11px] text-muted-foreground">
@@ -133,10 +148,10 @@ function CityCard({ city, saved }: { city: CityResult; saved: boolean }) {
             initialSaved={saved}
           />
           <Link
-            href={`/activities?cityId=${city.id}`}
+            href={`/cities/${city.id}`}
             className={buttonVariants({ variant: "ghost", size: "sm" })}
           >
-            Explore activities
+            Map and nearby
           </Link>
         </div>
       </div>

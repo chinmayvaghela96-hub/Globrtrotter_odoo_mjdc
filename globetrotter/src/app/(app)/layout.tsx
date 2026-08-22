@@ -10,6 +10,7 @@ const NAV = [
   { href: "/inspiration", label: "Inspiration" },
   { href: "/cities", label: "Cities" },
   { href: "/activities", label: "Activities" },
+  { href: "/wishlist", label: "Wishlist" },
 ]
 
 export default async function AppLayout({
@@ -25,7 +26,10 @@ export default async function AppLayout({
     <div className="flex min-h-svh flex-col">
       <header className="sticky top-0 z-40 border-b bg-background/80 backdrop-blur">
         <div className="mx-auto flex h-14 w-full max-w-6xl items-center gap-6 px-4">
-          <Link href="/dashboard" className="font-semibold tracking-tight">
+          <Link
+            href="/dashboard"
+            className="font-heading text-lg font-semibold tracking-tight"
+          >
             GlobeTrotter
           </Link>
 
