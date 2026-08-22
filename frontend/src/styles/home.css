@@ -1,0 +1,1236 @@
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;1,500;1,600&display=swap");
+
+
+/* =========================================================
+   GLOBAL
+========================================================= */
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: "DM Sans", sans-serif;
+}
+
+button,
+input {
+  font-family: inherit;
+}
+
+
+/* =========================================================
+   HOMEPAGE
+========================================================= */
+
+.home {
+  position: relative;
+  min-height: 100vh;
+  width: 100%;
+  overflow: hidden;
+
+  background-image: url("../assets/hero.jpg");
+  background-size: cover;
+  background-position: center center;
+
+  color: white;
+}
+
+
+/* =========================================================
+   DARK OVERLAY
+========================================================= */
+
+.home-overlay {
+  position: absolute;
+  inset: 0;
+
+  background:
+    linear-gradient(
+      90deg,
+      rgba(2, 20, 29, 0.64) 0%,
+      rgba(2, 20, 29, 0.35) 43%,
+      rgba(2, 20, 29, 0.26) 100%
+    );
+
+  z-index: 0;
+}
+
+
+/* =========================================================
+   NAVBAR
+========================================================= */
+
+.navbar {
+  position: relative;
+  z-index: 5;
+
+  width: 100%;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 34px 7.5% 20px;
+}
+
+
+/* Logo */
+
+.nav-logo {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+
+  font-size: 26px;
+  font-weight: 600;
+  letter-spacing: -0.7px;
+}
+
+
+/* Globe logo */
+
+.globe-logo {
+  width: 46px;
+  height: 46px;
+
+  flex-shrink: 0;
+}
+
+.globe-logo svg {
+  width: 100%;
+  height: 100%;
+
+  fill: none;
+  stroke: white;
+  stroke-width: 2.1;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.globe-logo .logo-plane {
+  fill: white;
+  stroke: none;
+}
+
+
+/* Navigation */
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 42px;
+}
+
+.nav-links a {
+  color: white;
+  text-decoration: none;
+
+  font-size: 15px;
+  font-weight: 500;
+
+  opacity: 0.94;
+
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
+}
+
+.nav-links a:hover {
+  opacity: 1;
+  transform: translateY(-1px);
+}
+
+
+/* Mobile menu */
+
+.mobile-menu {
+  display: none;
+
+  width: 42px;
+  height: 42px;
+
+  border: 1px solid rgba(255,255,255,0.4);
+  border-radius: 50%;
+
+  background: rgba(0,0,0,0.12);
+
+  cursor: pointer;
+}
+
+.mobile-menu span {
+  display: block;
+
+  width: 17px;
+  height: 1.5px;
+
+  margin: 4px auto;
+
+  background: white;
+}
+
+
+/* =========================================================
+   HERO
+========================================================= */
+
+.hero {
+  position: relative;
+  z-index: 2;
+
+  min-height: calc(100vh - 100px);
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding:
+    10px
+    7.5%
+    150px;
+}
+
+
+/* =========================================================
+   HERO LEFT
+========================================================= */
+
+.hero-content {
+  position: relative;
+
+  width: 54%;
+  max-width: 700px;
+
+  padding-top: 10px;
+}
+
+
+.hero-content h1 {
+  margin: 0;
+
+  font-size: clamp(64px, 6vw, 96px);
+
+  line-height: 0.91;
+
+  letter-spacing: -4px;
+
+  font-weight: 700;
+
+  text-shadow:
+    0 5px 25px rgba(0,0,0,0.18);
+}
+
+
+.hero-content h1 em {
+  display: block;
+
+  margin-top: 7px;
+
+  color: #dcae72;
+
+  font-family: "Playfair Display", serif;
+
+  font-size: 1.04em;
+
+  font-weight: 500;
+
+  letter-spacing: -3px;
+}
+
+
+.hero-tagline {
+  margin: 34px 0 0;
+
+  font-size: 24px;
+
+  line-height: 1.3;
+
+  font-weight: 600;
+
+  letter-spacing: -0.3px;
+}
+
+
+.hero-subtitle {
+  margin: 7px 0 0;
+
+  font-size: 16px;
+
+  opacity: 0.88;
+}
+
+
+/* =========================================================
+   PAPER AIRPLANE
+========================================================= */
+
+.flight-path {
+  position: relative;
+
+  width: 430px;
+  height: 180px;
+
+  margin-top: 20px;
+}
+
+
+.dotted-path {
+  position: absolute;
+
+  left: 0;
+  top: 0;
+
+  width: 100%;
+  height: 100%;
+}
+
+
+.dotted-path path {
+  fill: none;
+
+  stroke: rgba(255,255,255,0.9);
+
+  stroke-width: 2;
+
+  stroke-linecap: round;
+
+  stroke-dasharray: 6 8;
+}
+
+
+.hero-plane {
+  position: absolute;
+
+  width: 95px;
+
+  right: 6px;
+  top: 60px;
+
+  transform: rotate(-12deg);
+
+  animation:
+    planeFloat 3.5s ease-in-out infinite;
+}
+
+
+.plane-svg {
+  width: 100%;
+  height: auto;
+
+  filter:
+    drop-shadow(0 7px 9px rgba(0,0,0,0.3));
+}
+
+
+@keyframes planeFloat {
+
+  0%,
+  100% {
+    transform:
+      translateY(0)
+      rotate(-12deg);
+  }
+
+  50% {
+    transform:
+      translateY(-10px)
+      rotate(-6deg);
+  }
+}
+
+
+/* =========================================================
+   AUTH CARD
+========================================================= */
+
+.auth-card {
+  position: relative;
+
+  width: min(410px, 38vw);
+
+  padding: 38px 40px 34px;
+
+  border-radius: 27px;
+
+  background:
+    rgba(255,255,255,0.95);
+
+  color: #102b39;
+
+  box-shadow:
+    0 28px 70px rgba(0,0,0,0.30);
+
+  backdrop-filter: blur(18px);
+
+  animation:
+    cardAppear 0.7s ease-out;
+}
+
+
+@keyframes cardAppear {
+
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
+/* Auth heading */
+
+.auth-heading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 12px;
+
+  text-align: left;
+}
+
+
+.auth-heading .globe-logo {
+  width: 52px;
+  height: 52px;
+}
+
+
+.auth-heading .globe-logo svg {
+  stroke: #0b5264;
+}
+
+
+.auth-heading .globe-logo .logo-plane {
+  fill: #0b5264;
+}
+
+
+.auth-heading h2 {
+  margin: 0;
+
+  font-size: 29px;
+
+  line-height: 1.05;
+
+  letter-spacing: -1px;
+}
+
+
+.auth-heading p {
+  margin: 6px 0 0;
+
+  color: #66757d;
+
+  font-size: 12px;
+}
+
+
+/* =========================================================
+   TABS
+========================================================= */
+
+.tabs {
+  position: relative;
+
+  display: flex;
+
+  margin-top: 30px;
+
+  border-bottom: 1px solid #d9dfe1;
+}
+
+
+.tabs button {
+  position: relative;
+
+  width: 50%;
+
+  padding: 13px 0;
+
+  border: none;
+
+  background: transparent;
+
+  color: #758087;
+
+  font-size: 16px;
+
+  font-weight: 500;
+
+  cursor: pointer;
+}
+
+
+.tabs button.active {
+  color: #102b39;
+
+  font-weight: 700;
+}
+
+
+.tabs button.active::after {
+  content: "";
+
+  position: absolute;
+
+  left: 15%;
+  right: 15%;
+
+  bottom: -1px;
+
+  height: 3px;
+
+  border-radius: 3px;
+
+  background: #103f50;
+}
+
+
+/* =========================================================
+   FORM
+========================================================= */
+
+.auth-form {
+  margin-top: 28px;
+
+  animation: formFade 0.25s ease;
+}
+
+
+@keyframes formFade {
+
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
+.input-group {
+  position: relative;
+
+  display: flex;
+  align-items: center;
+
+  width: 100%;
+
+  height: 58px;
+
+  margin-bottom: 14px;
+
+  border: 1px solid #d5dcdf;
+
+  border-radius: 11px;
+
+  background: rgba(255,255,255,0.85);
+
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+
+.input-group:focus-within {
+  border-color: #0c5668;
+
+  box-shadow:
+    0 0 0 3px rgba(12,86,104,0.08);
+}
+
+
+.input-group input {
+  width: 100%;
+  height: 100%;
+
+  padding: 0 43px 0 48px;
+
+  border: none;
+  outline: none;
+
+  background: transparent;
+
+  color: #142f3b;
+
+  font-size: 15px;
+}
+
+
+.input-group input::placeholder {
+  color: #5d6b71;
+}
+
+
+.input-icon {
+  position: absolute;
+
+  left: 16px;
+
+  width: 19px;
+  height: 19px;
+
+  display: flex;
+  align-items: center;
+}
+
+
+.input-icon svg {
+  width: 100%;
+  height: 100%;
+
+  fill: none;
+
+  stroke: #435761;
+
+  stroke-width: 1.6;
+
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+
+/* Password eye */
+
+.eye-button {
+  position: absolute;
+
+  right: 15px;
+
+  border: none;
+
+  background: transparent;
+
+  color: #51646d;
+
+  cursor: pointer;
+
+  font-size: 15px;
+}
+
+
+/* =========================================================
+   FORGOT PASSWORD
+========================================================= */
+
+.forgot-password {
+  margin: 2px 2px 18px;
+
+  text-align: right;
+
+  color: #173d4c;
+
+  font-size: 12px;
+
+  cursor: pointer;
+}
+
+
+/* =========================================================
+   MAIN BUTTON
+========================================================= */
+
+.login-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 14px;
+
+  width: 100%;
+
+  height: 55px;
+
+  border: none;
+
+  border-radius: 10px;
+
+  background: #083f50;
+
+  color: white;
+
+  font-size: 16px;
+
+  font-weight: 600;
+
+  cursor: pointer;
+
+  box-shadow:
+    0 7px 18px rgba(8,63,80,0.22);
+
+  transition:
+    transform 0.2s ease,
+    background 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+
+.login-button span {
+  font-size: 22px;
+
+  transition:
+    transform 0.2s ease;
+}
+
+
+.login-button:hover {
+  background: #075267;
+
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 10px 22px rgba(8,63,80,0.28);
+}
+
+
+.login-button:hover span {
+  transform: translateX(5px);
+}
+
+
+/* =========================================================
+   DIVIDER
+========================================================= */
+
+.divider {
+  display: flex;
+  align-items: center;
+
+  gap: 14px;
+
+  margin: 19px 0;
+}
+
+
+.divider span {
+  flex: 1;
+
+  height: 1px;
+
+  background: #d8dddf;
+}
+
+
+.divider p {
+  margin: 0;
+
+  color: #637077;
+
+  font-size: 12px;
+}
+
+
+/* =========================================================
+   GOOGLE
+========================================================= */
+
+.google-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 11px;
+
+  width: 100%;
+
+  height: 53px;
+
+  border: 1px solid #d7dddf;
+
+  border-radius: 10px;
+
+  background: white;
+
+  color: #243942;
+
+  font-size: 14px;
+
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+
+.google-button:hover {
+  background: #fafcfc;
+
+  box-shadow:
+    0 5px 14px rgba(0,0,0,0.07);
+}
+
+
+.google-g {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 18px;
+  font-weight: 700;
+
+  color: #4285f4;
+}
+
+
+/* =========================================================
+   SWITCH ACCOUNT
+========================================================= */
+
+.switch-account {
+  margin: 21px 0 0;
+
+  text-align: center;
+
+  color: #718087;
+
+  font-size: 12px;
+}
+
+
+.switch-account button {
+  margin-left: 5px;
+
+  border: none;
+
+  background: transparent;
+
+  color: #103f50;
+
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+
+/* =========================================================
+   BOTTOM FEATURE BAR
+========================================================= */
+
+.feature-bar {
+  position: absolute;
+
+  z-index: 4;
+
+  left: 7.5%;
+  right: 7.5%;
+  bottom: 30px;
+
+  display: flex;
+  align-items: center;
+
+  max-width: 950px;
+}
+
+
+.feature {
+  display: flex;
+  align-items: center;
+
+  gap: 14px;
+
+  flex: 1;
+}
+
+
+.feature-icon {
+  width: 60px;
+  height: 60px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  border-radius: 50%;
+
+  background:
+    rgba(35,123,139,0.78);
+
+  backdrop-filter: blur(5px);
+}
+
+
+.feature-icon.experience {
+  background:
+    rgba(174,99,93,0.82);
+}
+
+
+.feature-icon svg {
+  width: 27px;
+  height: 27px;
+
+  fill: none;
+
+  stroke: white;
+
+  stroke-width: 1.8;
+
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+
+.feature h3 {
+  margin: 0 0 4px;
+
+  font-size: 17px;
+
+  font-weight: 600;
+}
+
+
+.feature p {
+  margin: 0;
+
+  font-size: 12px;
+
+  color: rgba(255,255,255,0.82);
+}
+
+
+.feature-divider {
+  width: 1px;
+  height: 48px;
+
+  margin: 0 28px;
+
+  background: rgba(255,255,255,0.35);
+}
+
+
+/* =========================================================
+   TABLET
+========================================================= */
+
+@media (max-width: 1100px) {
+
+  .navbar {
+    padding-left: 5%;
+    padding-right: 5%;
+  }
+
+  .nav-links {
+    gap: 22px;
+  }
+
+  .hero {
+    padding-left: 5%;
+    padding-right: 5%;
+  }
+
+  .hero-content {
+    width: 52%;
+  }
+
+  .hero-content h1 {
+    font-size: clamp(56px, 7vw, 78px);
+  }
+
+  .auth-card {
+    width: min(390px, 40vw);
+
+    padding-left: 30px;
+    padding-right: 30px;
+  }
+
+  .feature-bar {
+    left: 5%;
+    right: 5%;
+  }
+
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 768px) {
+
+  .home {
+    min-height: 100vh;
+
+    background-position:
+      58% center;
+  }
+
+
+  /* Darker mobile overlay */
+
+  .home-overlay {
+    background:
+      linear-gradient(
+        180deg,
+        rgba(2,20,29,0.52),
+        rgba(2,20,29,0.42) 45%,
+        rgba(2,20,29,0.68)
+      );
+  }
+
+
+  /* Navbar */
+
+  .navbar {
+    padding: 20px 22px;
+  }
+
+  .nav-logo {
+    font-size: 21px;
+  }
+
+  .nav-logo .globe-logo {
+    width: 38px;
+    height: 38px;
+  }
+
+  .nav-links {
+    display: none;
+  }
+
+  .mobile-menu {
+    display: block;
+  }
+
+
+  /* Hero */
+
+  .hero {
+    min-height: auto;
+
+    display: flex;
+    flex-direction: column;
+
+    align-items: center;
+
+    justify-content: flex-start;
+
+    gap: 30px;
+
+    padding:
+      28px 20px 120px;
+  }
+
+
+  .hero-content {
+    width: 100%;
+
+    max-width: 600px;
+
+    text-align: center;
+
+    padding-top: 5px;
+  }
+
+
+  .hero-content h1 {
+    font-size: clamp(52px, 14vw, 70px);
+
+    line-height: 0.9;
+
+    letter-spacing: -2.5px;
+  }
+
+
+  .hero-content h1 em {
+    margin-top: 8px;
+
+    font-size: 1em;
+
+    letter-spacing: -2px;
+  }
+
+
+  .hero-tagline {
+    margin-top: 23px;
+
+    font-size: 19px;
+  }
+
+
+  .hero-subtitle {
+    font-size: 14px;
+  }
+
+
+  /* Plane */
+
+  .flight-path {
+    width: min(330px, 90vw);
+
+    height: 110px;
+
+    margin: 3px auto 0;
+  }
+
+
+  .hero-plane {
+    width: 70px;
+
+    right: 4px;
+    top: 40px;
+  }
+
+
+  /* Auth card */
+
+  .auth-card {
+    width: min(100%, 410px);
+
+    padding:
+      28px 22px 25px;
+
+    border-radius: 23px;
+  }
+
+
+  .auth-heading .globe-logo {
+    width: 44px;
+    height: 44px;
+  }
+
+
+  .auth-heading h2 {
+    font-size: 25px;
+  }
+
+
+  .tabs {
+    margin-top: 23px;
+  }
+
+
+  .input-group {
+    height: 55px;
+  }
+
+
+  /* Feature bar */
+
+  .feature-bar {
+    position: relative;
+
+    left: auto;
+    right: auto;
+    bottom: auto;
+
+    width: 100%;
+
+    padding:
+      0 22px 30px;
+
+    flex-direction: column;
+
+    align-items: stretch;
+
+    gap: 18px;
+  }
+
+
+  .feature {
+    width: 100%;
+  }
+
+
+  .feature-icon {
+    width: 49px;
+    height: 49px;
+  }
+
+
+  .feature-icon svg {
+    width: 23px;
+    height: 23px;
+  }
+
+
+  .feature h3 {
+    font-size: 15px;
+  }
+
+
+  .feature p {
+    font-size: 11px;
+  }
+
+
+  .feature-divider {
+    display: none;
+  }
+
+}
+
+
+/* =========================================================
+   SMALL PHONES
+========================================================= */
+
+@media (max-width: 420px) {
+
+  .navbar {
+    padding-left: 17px;
+    padding-right: 17px;
+  }
+
+
+  .nav-logo {
+    font-size: 19px;
+  }
+
+
+  .nav-logo .globe-logo {
+    width: 34px;
+    height: 34px;
+  }
+
+
+  .hero {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+
+  .hero-content h1 {
+    font-size: 48px;
+  }
+
+
+  .hero-tagline {
+    font-size: 17px;
+  }
+
+
+  .auth-card {
+    padding:
+      25px 18px 22px;
+  }
+
+
+  .auth-heading h2 {
+    font-size: 23px;
+  }
+
+
+  .input-group {
+    height: 52px;
+  }
+
+
+  .login-button {
+    height: 52px;
+  }
+
+}
