@@ -222,3 +222,27 @@ export async function getRecommendedCities(take = 6) {
     },
   })
 }
+
+/** Standalone expenses for a trip. */
+export async function getTripExpenses(tripId: string) {
+  const expenses = await prisma.expense.findMany({
+    where: { tripId },
+    orderBy: { date: "asc" },
+    select: {
+      id: true,
+      category: true,
+      label: true,
+      amount: true,
+      date: true,
+    },
+  })
+
+  return expenses.map((exp) => ({
+    id: exp.id,
+    category: exp.category,
+    label: exp.label,
+    amount: money(exp.amount),
+    date: formatDateUTC(exp.date),
+  }))
+}
+
