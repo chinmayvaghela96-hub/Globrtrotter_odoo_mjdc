@@ -16,6 +16,7 @@ import {
 
 const BANGKOK = { latitude: 13.7563, longitude: 100.5018, name: "Bangkok" }
 const CHIANG_MAI = { latitude: 18.7883, longitude: 98.9853, name: "Chiang Mai" }
+const PARIS = { latitude: 48.8566, longitude: 2.3522, name: "Paris" }
 
 const ENV_KEYS = [
   "CURRENCY_API_URL",
@@ -143,18 +144,13 @@ describe("transport model", () => {
 
   it("costs more for a longer journey", () => {
     const near = modelTransport(BANGKOK, CHIANG_MAI)[0].cost
-    const far = modelTransport(BANGKOK, { latitude: 48.8566, longitude: 2.3522, name: "Paris" })[0]
-      .cost
+    const far = modelTransport(BANGKOK, PARIS)[0].cost
     expect(far).toBeGreaterThan(near)
   })
 
   it("drops ground transport once the distance makes it absurd", () => {
     // Bangkok to Paris by intercity coach is not an option anyone should see.
-    const modes = modelTransport(BANGKOK, {
-      latitude: 48.8566,
-      longitude: 2.3522,
-      name: "Paris",
-    }).map((option) => option.mode)
+    const modes = modelTransport(BANGKOK, PARIS).map((option) => option.mode)
 
     expect(modes).toContain("FLIGHT")
     expect(modes).not.toContain("BUS")
