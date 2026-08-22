@@ -2,7 +2,8 @@
 
 import { useActionState } from "react"
 import { toast } from "sonner"
-import { CURRENCIES, LANGUAGES, updateProfile } from "@/actions/profile"
+import { updateProfile } from "@/actions/profile"
+import { CURRENCIES, LANGUAGES } from "@/lib/preferences"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
